@@ -69,7 +69,8 @@
     "object.omit": "^3.0.0",
     "pdfkit": "^0.13.0",
     "sequelize": "^5.22.5",
-    "uniqid": "^5.4.0"
+    "uniqid": "^5.4.0",
+    "yarn": "^1.22.19"
   },
   "devDependencies": {
     "@babel/cli": "^7.12.10",

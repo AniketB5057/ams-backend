@@ -4,7 +4,6 @@ import dbHelper from '../common/dbHelper';
 export default (sequelize, DataTypes) => {
     const department = sequelize.define("department", {
         name: {
-            
             type: DataTypes.STRING,
             field: "name",
             validate: {

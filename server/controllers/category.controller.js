@@ -3,27 +3,18 @@ import { get, isEmpty } from "lodash";
 const _ = { get, isEmpty };
 
 
-/*
- * single Category info
- */
+// Single Category info
+const category = async (req, res) => {
+  const categoryId = _.get(req, "params.id", 0);
 
-
-
-const categoryProfile = async (req, res) => {
-  const payload = {
-    categoryId: _.get(req, "params.id", {}),
-  };
-  categoryServices.categoryProfile(payload).then((result) => {
+  categoryServices.category(categoryId).then((result) => {
     res.status(result.status).send(result);
   }).catch((err) => {
     res.status(422).send({ status: 422, message: err.message || "Something went wrong!" });
   });
 };
 
-/**
- * Create Category
- *
- */
+// Create Category
 const createCategory = async (req, res, next) => {
   categoryServices.createCategory(req).then((result) => {
     res.status(result.status).send(result);
@@ -32,11 +23,7 @@ const createCategory = async (req, res, next) => {
   });
 };
 
-/**
- * Get Category info
- *
- * @Request request
- */
+// Get Category info
 const categoryDetails = async (req, res, next) => {
   categoryServices.categoryDetails(req).then((result) => {
     res.status(result.status).send(result);
@@ -45,129 +32,32 @@ const categoryDetails = async (req, res, next) => {
   });
 };
 
-/**
- * Get Category Category_List
- *
- * @Request request
- */
-
-const categoryList = async (req, res, next) => {
-  console.log("req-------->>>>-----", req);
-  categoryServices
-    .categoryList(req)
-    .then((result) => {
-      res.status(result.status).send(result);
-    })
-    .catch((err) => {
-      res
-        .status(422)
-        .send({ status: 422, message: err.message || "Something went wrong!" });
-    });
-};
-
-/**
- * Update category info
- *
- * @param Request request
- */
+// Update category info
 const updateCategory = async (req, res, next) => {
-  categoryServices
-    .updateCategory(req)
-    .then((result) => {
-      res.status(result.status).send(result);
-    })
-    .catch((err) => {
-      res
-        .status(422)
-        .send({ status: 422, message: err.message || "Something went wrong!" });
-    });
+  categoryServices.updateCategory(req).then((result) => {
+    res.status(result.status).send(result);
+  }).catch((err) => {
+    res.status(422).send({ status: 422, message: err.message || "Something went wrong!" });
+  });
 };
 
-/**
- * Delete category
- *
- * @param Request request
- */
+// Delete category
 const deleteCategory = async (req, res, next) => {
   const categoryId = _.get(req, "params.id", {});
-  categoryServices
-    .deleteCategory(categoryId)
-    .then((result) => {
-      res.status(result.status).send(result);
-    })
-    .catch((err) => {
-      res
-        .status(422)
-        .send({ status: 422, message: err.message || "Something went wrong!" });
-    });
+  categoryServices.deleteCategory(categoryId).then((result) => {
+    res.status(result.status).send(result);
+  }).catch((err) => {
+    res.status(422).send({ status: 422, message: err.message || "Something went wrong!" });
+  });
 };
 
-/**
- *  Multiple Delete employee
- *
- * @param Request request
- */
-const multipleDeleteCategory = async (req, res, next) => {
-  const id = await req.query;
-  categoryServices
-    .multipleDeleteCategory(id)
-    .then((result) => {
-      res.status(result.status).send(result);
-    })
-    .catch((err) => {
-      res
-        .status(422)
-        .send({ status: 422, message: err.message || "Something went wrong!" });
-    });
-};
-
-/**
- *  generateStock
- *
- * @param Request request
- */
-const generateStock = async (req, res, next) => {
-  categoryServices
-    .generateStock(req)
-    .then((result) => {
-      res.status(result.status).send(result);
-    })
-    .catch((err) => {
-      res
-        .status(422)
-        .send({ status: 422, message: err.message || "Something went wrong!" });
-    });
-};
-
-/**
- * Status change of category
- *
- * @param Request request
- */
-const changestatus = async (req, res, next) => {
-  const categoryId = _.get(req, "params.id", 0);
-  categoryServices
-    .statusChange(categoryId)
-    .then((result) => {
-      res.status(result.status).send(result);
-    })
-    .catch((err) => {
-      res
-        .status(422)
-        .send({ status: 422, message: err.message || "Something went wrong!" });
-    });
-};
 
 const categoryController = {
-  categoryProfile,
+  category,
   categoryDetails,
-  categoryList,
   createCategory,
   updateCategory,
   deleteCategory,
-  multipleDeleteCategory,
-  generateStock,
-  changestatus,
 };
 
 export default categoryController;

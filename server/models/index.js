@@ -76,7 +76,7 @@ db.Sequelize = Sequelize;
 /*  db.sequelize.sync({ force: true }).then(() => {
   console.log("Drop and re-sync db.");
   // sequelize.query("INSERT INTO `user_roles` (`id`, `role`, `created_at`, `updated_at`) VALUES (NULL, 'admin', NOW(), NOW()), (NULL, 'hr', NOW(), NOW()),  (NULL, 'employee', NOW(), NOW())")
-}); */ 
+});  */
 
 
 // sequelize.query("INSERT INTO `user_details` (`id`, `user_role_id`, `token`, `email`, `password`, `first_name`, `last_name`, `phone`, `dob`, `status`, `email_verified`, `email_verified_at`, `email_verification_code`, `updated_by`, `created_by`, `created_at`, `updated_at`) VALUES (NULL, '1', NULL, 'admin@gmail.com', '$2b$12$J5xmzmUhWzgoTJ1fiGzjxeY3emGyK3jUVNoLMMvXgIMiZrbwVCBaO', 'Ram', 'Van', '7069989488', '1999-08-18', '0', '1', '2022-03-17 12:45:03.000000', NULL, NULL, NULL, '2022-03-17 12:45:03.000000', '2022-03-17 12:45:03.000000')")

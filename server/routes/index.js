@@ -13,6 +13,9 @@ router.use("/category", CategoryRoutes);
 import DepartmentRoutes from "./department.routes";
 router.use("/department", DepartmentRoutes);
 
+import employeeRoutes from "./employee.routes";
+router.use("/employee", employeeRoutes);
+
 // Redirect when no route matches (Wildcard)
 router.use('/*', (req, res, next) => {
   next({ status: 404, message: "The page not found!" });

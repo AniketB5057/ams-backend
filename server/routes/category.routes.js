@@ -8,19 +8,14 @@ import authMiddleware from "../middleware/auth.middleware";
 
 // Company routes // 
 
-router.post("/create", [createCategory(), validateRequest], categoryController.createCategory);
+router.post("/create", [createCategory(), validateRequest], categoryController.createCategory); 
 
 router.get("/", categoryController.categoryDetails);
-router.get("/list", categoryController.categoryList);
-router.get("/stock", categoryController.generateStock);
+router.get("/:id", categoryController.category);
 
-router.get("/:id", categoryController.categoryProfile);
-
-router.patch("/status/:id", [authMiddleware, validateRequest], categoryController.changestatus)
-router.patch("/:id", [updateCategory(), validateRequest], categoryController.updateCategory)
-
-router.delete("/", [authMiddleware, validateRequest], categoryController.multipleDeleteCategory)
 router.delete("/:id", categoryController.deleteCategory)
+
+router.put("/:id", [updateCategory(), validateRequest], categoryController.updateCategory)
 
 export default router;
 

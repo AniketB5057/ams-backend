@@ -30,5 +30,9 @@ export default {
     product: ["category_id","product_name"],
 
     // Allocations Attributes
-    allocation: ["id","combo_id","employee_id",]
+    allocation: ["id","combo_id","employee_id",],
+
+    // department attributes 
+    department : ["id","name","description"]
+
 }

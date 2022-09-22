@@ -54,14 +54,6 @@ export default (sequelize, DataTypes) => {
             field: "is_active",
             defaultValue: true,
         },
-        updated_by: {
-            type: DataTypes.INTEGER,
-            defaultValue: null
-        },
-        created_by: {
-            type: DataTypes.INTEGER,
-            defaultValue: null
-        }
     }, {
         tableName: "employee",
         updatedAt: "updated_at",

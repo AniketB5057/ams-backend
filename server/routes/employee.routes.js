@@ -10,5 +10,12 @@ import authMiddleware from "../middleware/auth.middleware";
 router.post("/create", [createemployee(), validateRequest], employeeController.createemployee);
 
 
+router.get("/", employeeController.employeeDetails);
+router.get("/:id", employeeController.employee);
+
+
+router.put("/:id", [createemployee(), validateRequest], employeeController.updateemployee);
+router.delete("/:id", employeeController.deleteemployee);
+
 export default router;
 

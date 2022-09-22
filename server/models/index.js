@@ -73,6 +73,9 @@ db.Sequelize = Sequelize;
 
 
 // drop the table if it already exists
+
+// if true data will clear .
+
 /*  db.sequelize.sync({ force: true }).then(() => {
   console.log("Drop and re-sync db.");
   // sequelize.query("INSERT INTO `user_roles` (`id`, `role`, `created_at`, `updated_at`) VALUES (NULL, 'admin', NOW(), NOW()), (NULL, 'hr', NOW(), NOW()),  (NULL, 'employee', NOW(), NOW())")

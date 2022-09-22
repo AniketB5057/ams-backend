@@ -9,13 +9,19 @@ export const createemployee = () => {
             .not()
             .isEmpty()
             .withMessage("firstName is required"),
-        body("employeeUniqueId")
+        body("description").not().isEmpty().withMessage("description is required"),
+    ]
+}
+
+export const updateemployee = () => {
+    return [
+        body("firstName")
             .not()
             .isEmpty()
-            .withMessage("employeeUniqueId is required"),
+            .withMessage("firstName is required"),
         body("description").not().isEmpty().withMessage("description is required"),
     ]
 }
 
 
-export default { createemployee }
+export default { createemployee , updateemployee }

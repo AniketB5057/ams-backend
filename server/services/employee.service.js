@@ -22,7 +22,6 @@ const createemployee = async (req) => {
     lastName,
     phone,
     description,
-    userId,
     departmentId
   } = req.body;
 
@@ -35,7 +34,6 @@ const createemployee = async (req) => {
       firstName,
       lastName,
       phone,
-      userId,
       departmentId,
       description,
       employeeUniqueId
@@ -179,7 +177,7 @@ const updateemployee = async (req) => {
     } else {
       employee.update({ email, firstName, lastName, phone, userId, departmentId, description });
     }
-    responseData = { status: 200, message: "data udated successfully", success: true };
+    responseData = { status: 200, message: "data update successfully", success: true };
   } catch (error) {
     responseData = { status: 400, message: error.message, success: false };
   }

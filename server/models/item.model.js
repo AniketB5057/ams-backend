@@ -39,10 +39,6 @@ export default (sequelize, DataTypes) => {
             type: DataTypes.INTEGER,
             field: "user_id",
         },
-        qty: {
-            type: DataTypes.STRING,
-            field: "qty",
-        },
         isActive: {
             type: DataTypes.BOOLEAN,
             field: "is_active",
@@ -58,8 +54,9 @@ export default (sequelize, DataTypes) => {
         },
     }, {
         freezeTableName: true,
-        allowNull: false,
         tableName: "item",
+        updatedAt: "updated_at",
+        createdAt: "created_at"
     });
 
 
@@ -76,3 +73,4 @@ export default (sequelize, DataTypes) => {
 
     return item;
 };
+

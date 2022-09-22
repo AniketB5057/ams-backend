@@ -54,7 +54,16 @@ export default (sequelize, DataTypes) => {
             field: "is_active",
             defaultValue: true,
         },
+        createdBy: {
+            type: DataTypes.INTEGER,
+            field: "created_by",
+        },
+        modifiedBy: {
+            type: DataTypes.INTEGER,
+            field: "modified_by",
+        },
     }, {
+        freezeTableName: true,
         tableName: "employee",
         updatedAt: "updated_at",
         createdAt: "created_at"

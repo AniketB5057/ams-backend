@@ -54,7 +54,7 @@ const updateController = async (req) => {
     } else {
       department.update({ name, description, status });
     }
-    responseData = { status: 200, message: "data udated successfully", success: true };
+    responseData = { status: 200, message: "data update successfully", success: true };
   } catch (error) {
     responseData = { status: 400, message: error.message, success: false };
   }
@@ -64,11 +64,11 @@ const updateController = async (req) => {
 const getallDepartment = async (req) => {
   let responseData = statusConst.error;
   try {
-    const departmentData = await models.department.findAll({ where: { isActive:true }});
+    const departmentData = await models.department.findAll({ where: { isActive: true } });
     if (!departmentData) {
       throw new Error("department not found")
     } else {
-      responseData = { status: 200,success: true, departmentData };
+      responseData = { status: 200, success: true, departmentData };
     }
   } catch (error) {
     responseData = { status: 400, message: error.message, success: false };
@@ -84,7 +84,7 @@ const getDepartment = async (data) => {
     if (!departmentData) {
       throw new Error("department not found")
     }
-    responseData = { status: 200,success: true, departmentData  };
+    responseData = { status: 200, success: true, departmentData };
   } catch (error) {
     responseData = { status: 400, message: error.message, success: false };
   }

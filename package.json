@@ -46,6 +46,7 @@
   "dependencies": {
     "@babel/runtime": "^7.12.5",
     "@types/sequelize": "^4.28.11",
+    "barcode": "^0.1.0",
     "bcrypt": "^5.0.0",
     "body-parser": "^1.19.2",
     "cookie-parser": "^1.4.5",
@@ -55,6 +56,7 @@
     "express": "^4.17.3",
     "express-fileupload": "^1.2.0",
     "express-validator": "^6.6.1",
+    "jsbarcode": "^3.11.5",
     "jsonwebtoken": "^8.5.1",
     "lodash": "^4.17.21",
     "moment": "^2.29.1",
@@ -67,6 +69,7 @@
     "nodemailer": "^6.5.0",
     "npm": "^6.14.15",
     "object.omit": "^3.0.0",
+    "path": "^0.12.7",
     "pdfkit": "^0.13.0",
     "sequelize": "^5.22.5",
     "uniqid": "^5.4.0",

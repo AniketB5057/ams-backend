@@ -9,7 +9,6 @@ export const createemployee = () => {
             .not()
             .isEmpty()
             .withMessage("firstName is required"),
-        body("description").not().isEmpty().withMessage("description is required"),
     ]
 }
 
@@ -19,9 +18,8 @@ export const updateemployee = () => {
             .not()
             .isEmpty()
             .withMessage("firstName is required"),
-        body("description").not().isEmpty().withMessage("description is required"),
     ]
 }
 
 
-export default { createemployee , updateemployee }
+export default { createemployee, updateemployee }

@@ -36,6 +36,7 @@ export default (sequelize, DataTypes) => {
         },
 
     }, {
+        freezeTableName: true,
         tableName: "department",
         updatedAt: "updated_at",
         createdAt: "created_at"

@@ -73,6 +73,7 @@ const categoryDetails = async (req) => {
 // Update Category detail
 const updateCategory = async (req) => {
   let responseData = statusConst.error;
+  // let createdBy =
 
   const categoryId = _.get(req, "params.id", 0);
   let { categoryName, description } = req.body;

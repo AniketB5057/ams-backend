@@ -44,8 +44,9 @@ export default (sequelize, DataTypes) => {
         },
         {
             freezeTableName: true,
-            allowNull: false,
-            tableName: "transferHistory",
+            tableName: "transfer_history",
+            updatedAt: "updated_at",
+            createdAt: "created_at"
         }
     );
 

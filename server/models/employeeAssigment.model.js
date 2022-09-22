@@ -43,6 +43,7 @@ export default (sequelize, DataTypes) => {
             field: "modified_by",
         },
     }, {
+        freezeTableName: true,
         tableName: "employee_assignment",
         updatedAt: "updated_at",
         createdAt: "created_at"

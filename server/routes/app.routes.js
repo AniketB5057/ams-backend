@@ -10,6 +10,7 @@ export const moduleRoutes = {
   category: "/category",
   product: "/department",
   employee: "/employee"
+
  
 };
 

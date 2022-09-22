@@ -35,6 +35,7 @@ export default (sequelize, DataTypes) => {
             field: "modified_by",
         },
     }, {
+        freezeTableName: true,
         tableName: "category_details",
         updatedAt: "updated_at",
         createdAt: "created_at"

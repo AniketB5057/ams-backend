@@ -34,8 +34,9 @@ export default (sequelize, DataTypes) => {
         }
     }, {
         freezeTableName: true,
-        allowNull: false,
-        tableName: "item",
+        tableName: "item_image",
+        updatedAt: "updated_at",
+        createdAt: "created_at"
     });
 
     // Modal associations

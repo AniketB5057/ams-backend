@@ -67,6 +67,7 @@ export default (sequelize, DataTypes) => {
             defaultValue: null
         }
     }, {
+        freezeTableName: true,
         tableName: "user",
         updatedAt: "updated_at",
         createdAt: "created_at"

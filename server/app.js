@@ -18,6 +18,7 @@ app.use(fileUpload());
 
 app.use(express.static(path.join(__dirname, '../assets')));
 
+
 // End point of API
 app.use(API_PREFIXED, indexRouter);
 

@@ -9,7 +9,6 @@ const _ = { chain };
 export default (req, res, next) => {
 
   const token = _.chain(req).get("headers.authorization", "").replace("Bearer ", "").value();
-  // console.log('>>>>>>>>>>>>>?????????',token);
   if (token) {
 
     // Validate token
@@ -18,11 +17,7 @@ export default (req, res, next) => {
 
       // Match JTW with user table
       authServices.findByToken(token).then(data => {
-        // console.log("data>>>>",data);
         if (data.status === 200) {
-          // Pass token user with current request
-          // console.log("req.tokenUser>>>>",req.tokenUser);
-
           req.tokenUser = data.data;
           next();
         } else {
@@ -35,13 +30,13 @@ export default (req, res, next) => {
     } catch (error) {
 
       if (error.name === 'TokenExpiredError') {
-        res.status(401).send(statusConst.tokenExpired);
+        res.status(401).send({ status: 401, message: 'Token expired' });
       } else {
-        res.status(401).send({ ...statusConst.tokenExpired, message: error.message });
+        res.status(401).send({ status: 401, message: error.message });
       }
     }
 
   } else {
-    res.status(statusConst.noTokenProvided.status).send(statusConst.noTokenProvided);
+    res.status(401).send({ status: 401, message: "No token provided" });
   }
 }

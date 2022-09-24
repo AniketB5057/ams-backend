@@ -9,14 +9,6 @@ export default (sequelize, DataTypes) => {
             type: DataTypes.INTEGER,      // employee reference
             field: "employee_id",
         },
-        qty: {
-            type: DataTypes.INTEGER,
-            field: "qty",
-        },
-        condition: {
-            type: DataTypes.STRING(30),
-            field: "condition",
-        },
         remarks: {
             type: DataTypes.STRING(20),
             field: "remarks",

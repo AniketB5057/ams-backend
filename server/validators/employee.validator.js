@@ -1,25 +1,15 @@
 import { body } from "express-validator";
-import { get, isEmpty, values } from "lodash";
-import models from "../models";
-const _ = { get, isEmpty };
 
-export const createemployee = () => {
-    return [
-        body("firstName")
-            .not()
-            .isEmpty()
-            .withMessage("firstName is required"),
-    ]
-}
+export const createValidation = [
+    body("firstName")
+        .not()
+        .isEmpty()
+        .withMessage("firstName is required"),
+]
 
-export const updateemployee = () => {
-    return [
-        body("firstName")
-            .not()
-            .isEmpty()
-            .withMessage("firstName is required"),
-    ]
-}
-
-
-export default { createemployee, updateemployee }
+export const updateValidation = [
+    body("firstName")
+        .not()
+        .isEmpty()
+        .withMessage("firstName is required"),
+]

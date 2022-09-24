@@ -5,7 +5,7 @@ import { get, isEmpty } from "lodash";
 
 const _ = { get, isEmpty };
 
-const createItem = async (req, res, next) => {
+export const createItem = async (req, res, next) => {
   itemServices.createItem(req).then((result) => {
     res.status(result.status).send(result);
   })
@@ -14,7 +14,7 @@ const createItem = async (req, res, next) => {
     });
 };
 
-const itemDetails = async (req, res, next) => {
+export const itemDetails = async (req, res, next) => {
   itemServices.itemDetails(req).then((result) => {
     res.status(result.status).send(result);
   }).catch((err) => {
@@ -22,7 +22,7 @@ const itemDetails = async (req, res, next) => {
   });
 };
 
-const itemGet = async (req, res) => {
+export const singleItem = async (req, res) => {
   const itemId = _.get(req, "params.id", 0);
   itemServices.itemGet(itemId).then((result) => {
     res.status(result.status).send(result);
@@ -31,7 +31,7 @@ const itemGet = async (req, res) => {
   });
 };
 
-const updateItem = (req, res) => {
+export const updateItem = (req, res) => {
   itemServices.updateItem(req).then((result) => {
     res.status(200).send(result);
   }).catch((err) => {
@@ -39,7 +39,7 @@ const updateItem = (req, res) => {
   });
 };
 
-const deleteItem = (req, res) => {
+export const deleteItem = (req, res) => {
   const ID = _.get(req, "params.id", 0);
   itemServices.deleteItem(ID).then((result) => {
     res.status(200).send(result);
@@ -47,14 +47,3 @@ const deleteItem = (req, res) => {
     res.status(422).send({ status: 422, message: error.message || "Something went wrong!", });
   });
 };
-
-const itemController = {
-  createItem,
-  itemDetails,
-  itemGet,
-  updateItem,
-  deleteItem
-
-};
-
-export default itemController;

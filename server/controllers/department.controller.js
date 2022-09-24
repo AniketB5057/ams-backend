@@ -3,7 +3,7 @@ import departmentServices from "../services/department.service";
 import { get, isEmpty } from "lodash";
 const _ = { get, isEmpty };
 
-const createDepartment = async (req, res, next) => {
+export const createDepartment = async (req, res, next) => {
   departmentServices.createDepartment(req).then((result) => {
     res.status(result.status).send(result);
   })
@@ -12,7 +12,7 @@ const createDepartment = async (req, res, next) => {
     });
 };
 
-const updateController = (req, res) => {
+export const updateController = (req, res) => {
   departmentServices.updateController(req).then((result) => {
     res.status(200).send(result);
   }).catch((err) => {
@@ -20,7 +20,7 @@ const updateController = (req, res) => {
   });
 };
 
-const getallDepartment = (req, res) => {
+export const getallDepartment = (req, res) => {
   departmentServices.getallDepartment(req).then((result) => {
     res.status(200).send(result);
   })
@@ -29,7 +29,7 @@ const getallDepartment = (req, res) => {
     });
 };
 
-const getDepartment = (req, res) => {
+export const getDepartment = (req, res) => {
   const bodydata = _.get(req, "params.id", 0);
   departmentServices.getDepartment(bodydata).then((result) => {
     res.status(200).send(result);
@@ -38,7 +38,7 @@ const getDepartment = (req, res) => {
   });
 };
 
-const deleteDepartment = (req, res) => {
+export const deleteDepartment = (req, res) => {
   const ID = _.get(req, "params.id", 0);
   departmentServices.deleteDepartment(ID).then((result) => {
     res.status(200).send(result);
@@ -46,14 +46,3 @@ const deleteDepartment = (req, res) => {
     res.status(422).send({ status: 422, message: error.message || "Something went wrong!", });
   });
 };
-
-const departmentController = {
-  createDepartment,
-  updateController,
-  getallDepartment,
-  getDepartment,
-  deleteDepartment
-
-};
-
-export default departmentController;

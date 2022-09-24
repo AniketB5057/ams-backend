@@ -1,47 +1,26 @@
 import userServices from "../services/user.services";
-import uservalidate from "../validators/user.validator";
 import { get, isEmpty } from "lodash";
-
-
 const _ = { get, isEmpty };
 
-/*
-**   
-login Controller 
-**  
-*/
-const login = (req, res, next) => {
+export const login = (req, res, next) => {
   const bodyData = _.get(req, "body", {});
   userServices.login(bodyData).then((result) => {
     res.status(result.status).send(result);
-
   }).catch((err) => {
     res.status(422).send({ status: 422, message: err.message || "Something went wrong!" });
   });
 };
 
-/*
-**   
-Create Controller 
-**  
-*/
-const createUser = (req, res) => {
+export const createUser = async (req, res, next) => {
   userServices.createUser(req).then((result) => {
     res.status(result.status).send(result);
-
-  }).catch((err) => {
-    res.status(422).send({ status: 422, message: err.message || "Something went wrong!" });
-  });
+  })
+    .catch((err) => {
+      res.status(422).send({ status: 422, message: err.message || "Something went wrong!" });
+    });
 };
 
-
-/*
-*   
-* User Profile Controller 
-*  
-*/
-
-const userProfile = async (req, res, next) => {
+export const userProfile = async (req, res, next) => {
   const payload = {
     userId: _.get(req, "params.id", {})
   }
@@ -53,38 +32,9 @@ const userProfile = async (req, res, next) => {
   })
 }
 
-const emp_userProfile = async (req, res, next) => {
-  let tokenUser = _.get(req, "tokenUser", {})
-  userServices.emp_userProfile(tokenUser).then(result => {
-    res.status(result.status).send(result);
-
-  }).catch(err => {
-    res.status(422).send({ status: 422, message: (err.message || "Something went wrong!") });
-  })
-}
-
-/*
-*   
-* User Details Controller 
-*  
-*/
-const users = async (req, res, next) => {
-
-  userServices.users(req).then(result => {
-    res.status(result.status).send(result);
-  }).catch(err => {
-    res.status(422).send({ status: 422, message: (err.message || "Something went wrong!") });
-  });
-}
-
-/*
-**   
-Change-Password Controller 
-**  
-*/
-const changePassword = async (req, res, next) => {
+export const changePassword = async (req, res, next) => {
   const payload = {
-    tokenUser : _.get(req, "tokenUser", {}),
+    tokenUser: _.get(req, "tokenUser", {}),
     formData: _.get(req, "body", {})
   }
   userServices.changePassword(payload).then(result => {
@@ -96,12 +46,7 @@ const changePassword = async (req, res, next) => {
 
 }
 
-/**
- * Update User info
- *
- * @param Request request
- */
- const updateUser = async (req, res, next) => {
+export const updateUser = async (req, res, next) => {
   userServices.updateUser(req).then(result => {
     res.status(result.status).send(result);
   }).catch(err => {
@@ -109,22 +54,7 @@ const changePassword = async (req, res, next) => {
   });
 }
 
-
-/**
- * Delete User
- *
- * @param Request request
- */
- const deleteUser = async (req, res, next) => {
-
-  userServices.deleteUser(req).then(result => {
-    res.status(result.status).send(result);
-  }).catch(err => {
-    res.status(422).send({ status: 422, message: (err.message || "Something went wrong!") });
-  });
-
-}
- const logout = async (req, res, next) => {
+export const logout = async (req, res, next) => {
   userServices.logout(req).then(result => {
     res.status(result.status).send(result);
   }).catch(err => {
@@ -132,38 +62,3 @@ const changePassword = async (req, res, next) => {
   });
 
 }
-
-
-/**
- * Status change of User 
- *
- * @param Request request
- */
- const changestatus = async (req, res, next) => {
-
-  const userId = _.get(req, "params.id", 0);
-  userServices.statusChange(userId).then(result => {
-    res.status(result.status).send(result);
-  }).catch(err => {
-    res.status(422).send({ status: 422, message: (err.message || "Something went wrong!") });
-  });
-
-}
-
-
-
-
-const userController = {
-  createUser,
-  login,
-  userProfile,
-  emp_userProfile,
-  users,
-  changePassword,
-  updateUser,
-  deleteUser,
-  logout,
-  changestatus,
-};
-
-export default userController;

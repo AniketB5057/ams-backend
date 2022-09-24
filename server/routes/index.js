@@ -19,6 +19,9 @@ router.use("/employee", employeeRoutes);
 import itemRoutes from "./item.routes";
 router.use("/item", itemRoutes);
 
+import userRoutes from "./user.routes";
+router.use("/user", userRoutes);
+
 // Redirect when no route matches (Wildcard)
 router.use('/*', (req, res, next) => {
   next({ status: 404, message: "The page not found!" });

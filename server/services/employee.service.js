@@ -13,40 +13,24 @@ import { Op } from "sequelize";
  *
  * @param Request request
  */
-const createemployee = async (req) => {
+const createEmployee = async (req) => {
 
   let responseData = statusConst.error;
-  let {
-    email,
-    firstName,
-    lastName,
-    phone,
-    description,
-    departmentId
-  } = req.body;
+  let { email, firstName, lastName, phone, description, departmentId } = req.body;
 
   try {
 
     const employeeUniqueId = uniqueId.time().toUpperCase();
 
     const employee = await models.employee.create({
-      email,
-      firstName,
-      lastName,
-      phone,
-      departmentId,
-      description,
-      employeeUniqueId
+      email, firstName, lastName, phone, departmentId, description, employeeUniqueId
     });
 
     if (!employee) {
       throw new Error("Unable to create new employee");
     } else {
       responseData = {
-        status: 200,
-        message: "employee create successfully",
-        success: true,
-        data: employee,
+        status: 200, message: "employee create successfully", success: true, data: employee,
       };
     }
   } catch (error) {
@@ -165,7 +149,7 @@ const employee = async (employeeId) => {
   return responseData;
 };
 
-const updateemployee = async (req) => {
+const updateEmployee = async (req) => {
   let responseData = statusConst.error;
   const { email, firstName, lastName, phone, userId, departmentId, description } = req.body;
   const { id } = req.params;
@@ -184,7 +168,7 @@ const updateemployee = async (req) => {
   return responseData;
 };
 
-const deleteemployee = async (id) => {
+const deleteEmployee = async (id) => {
   let responseData = statusConst.error;
   try {
     let employeeDatae = await models.employee.findOne({ where: { id: id } });
@@ -204,11 +188,11 @@ const deleteemployee = async (id) => {
 };
 
 const employeeServices = {
-  createemployee,
+  createEmployee,
   employeeDetails,
   employee,
-  updateemployee,
-  deleteemployee
+  updateEmployee,
+  deleteEmployee
 
 };
 

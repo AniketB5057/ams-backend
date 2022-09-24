@@ -1,21 +1,21 @@
 import express from 'express';
 const router = express.Router();
-import { createemployee } from '../validators/employee.validator';
-import employeeController from "../controllers/employee.controller";
+import { createValidation, updateValidation } from '../validators/employee.validator';
+import { createEmployee, employeeDetails, employee, updateEmployee, deleteEmployee } from "../controllers/employee.controller";
 import validateRequest from "../middleware/validateRequest.middleware";
 import authMiddleware from "../middleware/auth.middleware";
 
 // employee routes // 
 
-router.post("/create", [createemployee(), validateRequest], employeeController.createemployee);
+router.post("/create", [authMiddleware, createValidation, validateRequest], createEmployee);
 
 
-router.get("/", employeeController.employeeDetails);
-router.get("/:id", employeeController.employee);
+router.get("/", authMiddleware, employeeDetails);
+router.get("/:id", authMiddleware, employee);
 
 
-router.put("/:id", [createemployee(), validateRequest], employeeController.updateemployee);
-router.delete("/:id", employeeController.deleteemployee);
+router.put("/:id", [authMiddleware, updateValidation, validateRequest], updateEmployee);
+router.delete("/:id", authMiddleware, deleteEmployee);
 
 export default router;
 

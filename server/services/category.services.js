@@ -14,10 +14,7 @@ const category = async (categoryId) => {
   let responseData = statusConst.error;
   try {
 
-    const categoryData = await models.categoryDetails.findOne({
-      where: { [Op.and]: { id: categoryId, isActive: true } }
-    });
-
+    const categoryData = await models.categoryDetails.findOne({where: { [Op.and]: { id: categoryId, isActive: true } }});
     if (categoryData) {
       responseData = { status: 200, message: "category fetch successfully", success: true, categoryData };
     } else {

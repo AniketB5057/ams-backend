@@ -9,7 +9,8 @@ export const moduleRoutes = {
   user: "/user",
   category: "/category",
   product: "/department",
-  employee: "/employee"
+  employee: "/employee",
+  user : "/user"
 
  
 };

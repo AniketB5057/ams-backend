@@ -27,10 +27,6 @@ export default (sequelize, DataTypes) => {
             type: DataTypes.STRING,
             field: "date_purchased",
         },
-        qty: {
-            type: DataTypes.STRING,
-            field: "qty",
-        },
         categoryId: {
             type: DataTypes.INTEGER,
             field: "category_id",

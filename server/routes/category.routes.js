@@ -1,21 +1,19 @@
 import express from 'express';
 const router = express.Router();
-import { createCategory, updateCategory } from '../validators/category.validator';
-import categoryController from "../controllers/category.controller";
-import { categoryRoutes } from "./app.routes";
+import { createValidation, updateValidation } from '../validators/category.validator';
+import { createCategory, categoryDetails, category, deleteCategory, updateCategory } from "../controllers/category.controller";
 import validateRequest from "../middleware/validateRequest.middleware";
 import authMiddleware from "../middleware/auth.middleware";
 
-// Company routes // 
+// Category routes 
+router.post("/create", [authMiddleware, createValidation, validateRequest], createCategory);
 
-router.post("/create", [createCategory(), validateRequest], categoryController.createCategory); 
+router.get("/", authMiddleware, categoryDetails);
+router.get("/:id", authMiddleware, category);
 
-router.get("/", categoryController.categoryDetails);
-router.get("/:id", categoryController.category);
+router.delete("/:id", authMiddleware, deleteCategory)
 
-router.delete("/:id", categoryController.deleteCategory)
-
-router.put("/:id", [updateCategory(), validateRequest], categoryController.updateCategory)
+router.put("/:id", [authMiddleware, updateValidation, validateRequest], updateCategory)
 
 export default router;
 

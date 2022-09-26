@@ -7,6 +7,7 @@ import { get, isEmpty, has, isObject } from "lodash";
 const _ = { get, isEmpty, has };
 import { commonStatuses } from "../common/appConstants";
 import { Op } from "sequelize";
+import moment from "moment";
 
 /**
  * Category registrasion
@@ -15,17 +16,20 @@ import { Op } from "sequelize";
  */
 const createItem = async (req) => {
   let responseData = statusConst.error;
-
-  let { itemName, description, serialNo, cost, datePurchased, qty, categoryId, userId } = req.body;
+  const createdBy = req.tokenUser.id
+  let { itemName, description, serialNo, cost, datePurchased, categoryId } = req.body;
   try {
 
     const itemTag = uniqueId.time().toUpperCase();
-    const item = await models.item.create({ itemTag, itemName, description, serialNo, cost, datePurchased, qty, categoryId, userId });
+    const categoryData = await models.categoryDetails.findOne({ where: { [Op.and]: { id: categoryId, isActive: true } } });
+    if (!categoryData) { throw new Error("categoryDetails not found") }
+
+    const item = await models.item.create({ itemTag, itemName, description, serialNo, cost, datePurchased, categoryId, createdBy, userId: createdBy });
 
     if (!item) {
-      throw new Error("Unable to create new Category");
+      throw new Error("Unable to create new Item");
     } else {
-      responseData = { status: 200, message: "Category create successfully", success: true, data: item };
+      responseData = { status: 200, message: "Item create successfully", success: true, data: item };
     }
   } catch (error) {
     let errors = {};
@@ -33,8 +37,7 @@ const createItem = async (req) => {
     try {
       if (["SequelizeValidationError", "SequelizeUniqueConstraintError"].includes(error.name)) {
         errors = dbHelper.formatSequelizeErrors(error);
-        let dbError = Object.values(errors).toString()
-        responseData = { status: 200, message: dbError, success: false };
+        responseData = { status: 400, errors, success: false };
       }
     } catch (error) {
       responseData = { message: error.message };
@@ -48,7 +51,7 @@ const itemDetails = async (req) => {
   let responseData = statusConst.error;
   const entityParams = _.get(req, "query", {});
   const searchText = _.get(entityParams, "q", "");
-  let defaultWhere = {};
+  let defaultWhere = { isActive: true };
 
   if (_.has(entityParams, "q") && !_.isEmpty(searchText)) {
     defaultWhere = {
@@ -57,6 +60,7 @@ const itemDetails = async (req) => {
         last_name: { [Op.like]: `%${searchText}%` },
         id: { [Op.like]: `%${searchText}%` },
       },
+      isActive: true
     };
   }
 
@@ -74,7 +78,7 @@ const itemDetails = async (req) => {
       ],
       offset: offset,
       limit: limit,
-      order: [["id", "DESC"]],
+      order: [["id", "DESC"]]
     });
     if (itemDeatail.rows.length > 0) {
       pagination["totalPages"] = Math.ceil(
@@ -124,15 +128,19 @@ const itemGet = async (itemId) => {
 
 const updateItem = async (req) => {
   let responseData = statusConst.error;
-  const { itemName, description, serialNo, cost, datePurchased, qty, categoryId, userId } = req.body;
+  const updatedBy = req.tokenUser.id
+  const { itemName, description, serialNo, cost, datePurchased, qty, categoryId } = req.body;
   const { id } = req.params;
   try {
     const item = await models.item.findOne({ where: { id: id } });
 
+    const categoryData = await models.categoryDetails.findOne({ where: { [Op.and]: { id: categoryId, isActive: true } } });
+    if (!categoryData) { throw new Error("categoryDetails not found") }
+
     if (!item) {
       throw new Error("item not found")
     } else {
-      item.update({ itemName, description, serialNo, cost, datePurchased, qty, categoryId, userId });
+      item.update({ itemName, description, serialNo, cost, datePurchased, qty, categoryId, updatedBy });
     }
     responseData = { status: 200, message: "data update successfully", success: true };
   } catch (error) {

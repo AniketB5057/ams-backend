@@ -74,6 +74,7 @@ export default (sequelize, DataTypes) => {
     employee.associate = function (models) {
         employee.belongsTo(models.user, { foreignKey: 'userId', as: 'user' });
         employee.belongsTo(models.department, { foreignKey: 'departmentId', as: 'departmentDetails' });
+        employee.hasMany(models.employeeAssignment, { foreignKey: 'employeeId', as: 'employeeAssigments' })
         employee.belongsTo(models.user, { foreignKey: 'createdBy', as: 'createdby' });
         employee.belongsTo(models.user, { foreignKey: 'modifiedBy', as: 'modifiedby' });
     };

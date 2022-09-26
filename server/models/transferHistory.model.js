@@ -6,20 +6,16 @@ export default (sequelize, DataTypes) => {
         {
             // attributes
             transferredFrom: {
-                type: DataTypes.DATE,
+                type: DataTypes.INTEGER,
                 field: "transferred_from",
             },
             transferredTo: {
-                type: DataTypes.DATE,
+                type: DataTypes.INTEGER,
                 field: "transferred_to",
             },
             itemId: {
                 type: DataTypes.INTEGER,   // item reference
                 field: "item_id",
-            },
-            qty: {
-                type: DataTypes.INTEGER,
-                field: "qty",
             },
             dateTransfer: {
                 type: DataTypes.DATE,
@@ -28,10 +24,6 @@ export default (sequelize, DataTypes) => {
             remarks: {
                 type: DataTypes.STRING,
                 field: "remarks",
-            },
-            userId: {
-                type: DataTypes.INTEGER,
-                field: "user_id",
             },
             createdBy: {
                 type: DataTypes.INTEGER,

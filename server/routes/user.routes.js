@@ -7,7 +7,7 @@ import authMiddleware from "../middleware/auth.middleware";
 import { createValidation, loginValidation, changePasswordValidation, updateUserValidation } from "../validators/user.validator";
 
 // User routes 
-router.post("/create", authMiddleware, createValidation, validateRequest, createUser);
+router.post("/create", /* authMiddleware ,*/ createValidation, validateRequest, createUser);
 router.post("/login", loginValidation, validateRequest, login);
 router.post("/change-password", [authMiddleware, changePasswordValidation, validateRequest], changePassword)
 

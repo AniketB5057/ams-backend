@@ -40,6 +40,11 @@ export default (sequelize, DataTypes) => {
             field: "is_active",
             defaultValue: true,
         },
+        isAssigned: {
+            type: DataTypes.BOOLEAN,
+            field: "is_assigned",
+            defaultValue: false,
+        },
         createdBy: {
             type: DataTypes.INTEGER,
             field: "created_by",

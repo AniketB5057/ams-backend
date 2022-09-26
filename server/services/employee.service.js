@@ -3,11 +3,11 @@ import models from "../models";
 import dbHelper from "../common/dbHelper";
 import Helper from "../common/helper";
 import uniqueId from "uniqid";
-import { get, isEmpty, has, isObject } from "lodash";
+import { get, isEmpty, has } from "lodash";
+import { UNIQUEID } from "../utils/constant"
 const _ = { get, isEmpty, has };
-import { commonStatuses } from "../common/appConstants";
-import { Op } from "sequelize";
-
+import { Op, where } from "sequelize";
+const sequelize = models.sequelize;
 /**
  * data registrasion
  *
@@ -17,37 +17,30 @@ const createEmployee = async (req) => {
 
   let responseData = statusConst.error;
   let { email, firstName, lastName, phone, description, departmentId } = req.body;
-
+  const createdBy = req.tokenUser.id
   try {
+    let employee = await sequelize.transaction(async (t) => {
 
-    const employeeUniqueId = uniqueId.time().toUpperCase();
+      const employee = await models.employee.create({ email, firstName, lastName, phone, departmentId, description, employeeUniqueId, userId: createdBy, createdBy }, { transaction: t });
+      if (!employee) { throw new Error("Unable to create new employee") }
 
-    const employee = await models.employee.create({
-      email, firstName, lastName, phone, departmentId, description, employeeUniqueId
-    });
+      const idLength = employee.id.toString().length;
+      const newId = UNIQUEID.substring(0, UNIQUEID.length - idLength);
+      let employeeUniqueId = `${newId}${employee.id}`;
 
-    if (!employee) {
-      throw new Error("Unable to create new employee");
-    } else {
-      responseData = {
-        status: 200, message: "employee create successfully", success: true, data: employee,
-      };
-    }
+      await employee.update({ employeeUniqueId }, { where: { id: employee.id }, transaction: t })
+      return employee
+    })
+
+    responseData = { status: 200, message: "employee create successfully", success: true, data: employee };
   } catch (error) {
+
     let errors = {};
     responseData = { status: 400, message: error.message };
     try {
-      if (
-        ["SequelizeValidationError", "SequelizeUniqueConstraintError"].includes(
-          error
-        )
-      ) {
-        errors = dbHelper.formatSequelizeErrors(error.message);
-        responseData = {
-          status: 200,
-          message: "employee already exist",
-          success: false,
-        };
+      if (["SequelizeValidationError", "SequelizeUniqueConstraintError"].includes(error.name)) {
+        errors = dbHelper.formatSequelizeErrors(error);
+        responseData = { status: 400, errors, success: false };
       }
     } catch (error) {
       responseData = { message: error.message };
@@ -116,27 +109,16 @@ const employee = async (employeeId) => {
   try {
     const employeeData = await models.employee.findOne({
       where: { [Op.and]: { id: employeeId, isActive: true } },
-      include: [
-        {
-          model: models.department,
-          as: "departmentDetails",
-        },
-      ],
+      include: [{
+        model: models.department,
+        as: "departmentDetails",
+      }],
     });
 
     if (employeeData) {
-      responseData = {
-        status: 200,
-        message: "employee fetch successfully",
-        success: true,
-        employeeData,
-      };
+      responseData = { status: 200, message: "employee fetch successfully", success: true, employeeData };
     } else {
-      responseData = {
-        status: 400,
-        message: "employee does not exist",
-        success: false,
-      };
+      responseData = { status: 400, message: "employee does not exist", success: false };
     }
   } catch (error) {
     console.log(error);
@@ -153,13 +135,14 @@ const updateEmployee = async (req) => {
   let responseData = statusConst.error;
   const { email, firstName, lastName, phone, userId, departmentId, description } = req.body;
   const { id } = req.params;
+  const updatedBy = req.tokenUser.id
   try {
     const employee = await models.employee.findOne({ where: { id: id } });
 
     if (!employee) {
       throw new Error("employee not found")
     } else {
-      employee.update({ email, firstName, lastName, phone, userId, departmentId, description });
+      employee.update({ email, firstName, lastName, phone, userId, departmentId, description, updatedBy });
     }
     responseData = { status: 200, message: "data update successfully", success: true };
   } catch (error) {
@@ -187,12 +170,67 @@ const deleteEmployee = async (id) => {
   return responseData;
 };
 
+const assignItems = async (req) => {
+
+  let responseData = statusConst.error;
+  let { employeeId, itemIds, remarks } = req.body;
+  const createdBy = req.tokenUser.id
+  try {
+    if (!Array.isArray(itemIds)) { throw new Error("itemIds is not a array") }
+
+    const employeeAssigmentDetail = await sequelize.transaction(async (t) => {
+      const employee = await models.employee.findOne({ where: { id: employeeId }, transaction: t })
+      if (!employee) { throw new Error("employee does not exist") }
+
+      let assignItems = [];
+      for (let i = 0; i < itemIds.length; i++) {
+        const element = itemIds[i];
+        const item = await models.item.findOne({ where: { id: element }, transaction: t });
+        if (!item) { throw new Error("Item does not exist") };
+        if (item.isAssigned) { throw new Error(`This ${item.itemName} is already assing to another employee`) }
+
+        let itemInfo = { itemId: element, employeeId: employeeId, createdBy: createdBy, userId: createdBy, remarks: remarks }
+        assignItems.push(itemInfo)
+      }
+      let employeeAssigment = await models.employeeAssignment.bulkCreate(assignItems, { returning: true }, { transaction: t })
+
+      if (!employeeAssigment) { throw new Error("Unable to assign item to employee"); }
+      await models.item.update({ isAssigned: true }, { where: { id: { [Op.in]: itemIds } }, transaction: t })
+
+      return employeeAssigment
+    });
+
+    responseData = { status: 200, message: "items assign successfully", success: true, data: employeeAssigmentDetail }
+  } catch (error) {
+    responseData = { status: 400, message: error.message, success: false };
+  }
+  return responseData;
+};
+
+const employeeComboDetail = async (req) => {
+  // let responseData = { status: 400, data: employeeAssigment, success: false };
+  let { employeeId } = req.params
+  let responseData;
+  let employeeAssigment = await models.employeeAssignment.findAll({
+    where: { employeeId },
+    attributes: ["dateAssigned"],
+    include: [{
+      model: models.item,
+      as: "itemDetail",
+      attributes: ["itemTag", "itemName", "description", "serialNo", "cost", "datePurchased"],
+      required: false
+    }]
+  });
+  return responseData = { status: 200, data: employeeAssigment, success: true };
+}
 const employeeServices = {
   createEmployee,
   employeeDetails,
   employee,
   updateEmployee,
-  deleteEmployee
+  deleteEmployee,
+  assignItems,
+  employeeComboDetail
 
 };
 

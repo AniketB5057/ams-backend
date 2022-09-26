@@ -16,11 +16,12 @@ import { Op } from "sequelize";
 const createDepartment = async (req) => {
   let responseData = statusConst.error;
   let { name, description } = req.body;
+  const createdBy = req.tokenUser.id
 
   try {
     const departmentUniqueId = uniqueId.time().toUpperCase();
 
-    const department = await models.department.create({ name, description, departmentUniqueId });
+    const department = await models.department.create({ name, description, departmentUniqueId, userId: createdBy, createdBy });
 
     if (!department) {
       throw new Error("Unable to create new Department");
@@ -33,7 +34,7 @@ const createDepartment = async (req) => {
     try {
       if (["SequelizeValidationError", "SequelizeUniqueConstraintError"].includes(error.name)) {
         errors = dbHelper.formatSequelizeErrors(error);
-        responseData = { status: 200, message: 'Department already exist', success: false };
+        responseData = { status: 400, errors, success: false };
       }
     } catch (error) {
       responseData = { message: error.message };
@@ -42,17 +43,18 @@ const createDepartment = async (req) => {
   return responseData;
 };
 
-const updateController = async (req) => {
+const updateDepartment = async (req) => {
   let responseData = statusConst.error;
-  const { name, description, status } = req.body;
+  const { name, description } = req.body;
   const { id } = req.params;
+  const updatedBy = req.tokenUser.id
   try {
     const department = await models.department.findOne({ where: { id: id } });
 
     if (!department) {
       throw new Error("department not found")
     } else {
-      department.update({ name, description, status });
+      await department.update({ name, description, updatedBy });
     }
     responseData = { status: 200, message: "data update successfully", success: true };
   } catch (error) {
@@ -113,7 +115,7 @@ const deleteDepartment = async (departmentId) => {
 
 const dataServices = {
   createDepartment,
-  updateController,
+  updateDepartment,
   getallDepartment,
   getDepartment,
   deleteDepartment

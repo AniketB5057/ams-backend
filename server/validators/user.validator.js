@@ -20,14 +20,14 @@ export const createValidation = [
   body("password")
     .not()
     .isEmpty()
-    .withMessage("New password is required")
+    .withMessage("password is required")
     .isLength({
       min: 4,
       max: 16,
     })
     .withMessage("Password must be between 4 to 16 characters")
     .matches(/^(?=.*[a-z])(?!.* )(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*])/)
-    .withMessage("Must contains at least upper case, lower case, digit, special character and no white space"),
+    .withMessage("Must contains upper case, lower case, digit, special character"),
   body("confirmPassword")
     .not()
     .isEmpty()
@@ -63,9 +63,7 @@ export const changePasswordValidation = [
     })
     .withMessage("Password must be between 4 to 16 characters")
     .matches(/^(?=.*[a-z])(?!.* )(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*])/)
-    .withMessage(
-      "Must contains at least upper case, lower case, digit, special character and no white space"
-    )
+    .withMessage("Must contains upper case, lower case, digit, special character")
     .custom((value, { req }) => {
       if (value === req.body.currentPassword) {
         throw new Error("Current password and New password cannot be same");

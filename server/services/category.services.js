@@ -14,7 +14,7 @@ const category = async (categoryId) => {
   let responseData = statusConst.error;
   try {
 
-    const categoryData = await models.categoryDetails.findOne({where: { [Op.and]: { id: categoryId, isActive: true } }});
+    const categoryData = await models.categoryDetails.findOne({ where: { [Op.and]: { id: categoryId, isActive: true } } });
     if (categoryData) {
       responseData = { status: 200, message: "category fetch successfully", success: true, categoryData };
     } else {
@@ -83,6 +83,7 @@ const updateCategory = async (req) => {
     if (!category) {
       return { status: 404, message: "category not found", success: false };
     } else {
+      categoryName = categoryName.toUpperCase();
       let catetoryData = category.update({ categoryName, description, isActive: true });
 
       if (_.isEmpty(catetoryData)) {
@@ -140,7 +141,7 @@ const createCategory = async (req) => {
 
   let { categoryName, description } = req.body;
   try {
-
+    categoryName = categoryName.toUpperCase()
     const categoryDetails = await models.categoryDetails.create({ categoryName, description });
 
     if (!categoryDetails) {
@@ -153,9 +154,7 @@ const createCategory = async (req) => {
     responseData = { status: 400, message: error.message };
     try {
       if (["SequelizeValidationError", "SequelizeUniqueConstraintError"].includes(error.name)) {
-        errors = dbHelper.formatSequelizeErrors(error);
-        let dbError = Object.values(errors).toString()
-        responseData = { status: 200, message: dbError, success: false };
+        responseData = { status: 200, errors, success: false };
       }
     } catch (error) {
       responseData = { message: error.message };

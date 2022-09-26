@@ -18,23 +18,28 @@ import { Op } from "sequelize";
  * @param Request request
  */
 const login = async (req) => {
-  let responseData = statusConst.authError;
+  let responseData = statusConst.error;
   try {
     const { email, password } = req;
     const User = await models.user.findOne({ where: { email: email, isActive: true } });
 
     const userPassword = _.get(User, "password", null);
     const validPassword = await bcrypt.compare(password, userPassword);
+    if (!validPassword) { throw new Error("Incorrect password") }
 
     if (!_.isEmpty(User) && validPassword) {
       const tokenData = await generateToken({ id: User.id });
       const token = _.get(tokenData, "token", null);
+      console.log(User);
       if (token) {
         await User.update({ token });
         responseData = { status: 200, message: "Login successful", data: { token } };
       }
+    } else {
+      throw new Error("Wrong credentials")
     }
   } catch (err) {
+    console.log("err->", err);
     responseData = { status: 422, message: err.message };
   }
   return responseData;
@@ -84,7 +89,7 @@ const createUser = async (req) => {
     try {
       if (["SequelizeValidationError", "SequelizeUniqueConstraintError"].includes(error.name)) {
         errors = dbHelper.formatSequelizeErrors(error);
-        responseData = { status: 200, errors, success: false };
+        responseData = { status: 400, errors, success: false };
       }
     } catch (error) {
       responseData = { status: 400, message: error.message };
@@ -103,14 +108,12 @@ const findByToken = async (token) => {
         isActive: true,
       },
     });
-    console.log("User---->", User);
     if (!_.isEmpty(User) && _.isObject(User)) {
       responseData = { status: 200, message: "Success", success: true, data: User };
     } else {
       responseData = { status: 422, message: "user not found", success: false };
     }
   } catch (error) {
-    console.log("error--->", error);
     responseData = { status: 422, message: error.message };
   }
 

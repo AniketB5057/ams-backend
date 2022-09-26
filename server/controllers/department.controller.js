@@ -12,8 +12,8 @@ export const createDepartment = async (req, res, next) => {
     });
 };
 
-export const updateController = (req, res) => {
-  departmentServices.updateController(req).then((result) => {
+export const updateDepartment = (req, res) => {
+  departmentServices.updateDepartment(req).then((result) => {
     res.status(200).send(result);
   }).catch((err) => {
     res.status(422).send({ status: 422, message: err.message || "Something went wrong!" });

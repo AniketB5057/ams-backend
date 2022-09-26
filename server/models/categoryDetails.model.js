@@ -45,6 +45,7 @@ export default (sequelize, DataTypes) => {
     // Modal associations
     categoryDetails.associate = function (models) {
         categoryDetails.belongsTo(models.user, { foreignKey: 'userId', as: 'user' });
+        categoryDetails.hasMany(models.item, { foreignKey: 'id', as: 'employeeItems' });
 
         categoryDetails.belongsTo(models.user, { foreignKey: 'createdBy', as: 'createdby' });
         categoryDetails.belongsTo(models.user, { foreignKey: 'modifiedBy', as: 'modifiedby' });

@@ -66,7 +66,6 @@ const categoryDetails = async (req) => {
   return responseData;
 };
 
-
 // Update Category detail
 const updateCategory = async (req) => {
   let responseData = statusConst.error;
@@ -139,10 +138,10 @@ const deleteCategory = async (id) => {
 const createCategory = async (req) => {
   let responseData = statusConst.error;
 
-  let { categoryName, description } = req.body;
+  let { categoryName, description, itemId } = req.body;
   try {
     categoryName = categoryName.toUpperCase()
-    const categoryDetails = await models.categoryDetails.create({ categoryName, description });
+    const categoryDetails = await models.categoryDetails.create({ categoryName, description, itemId });
 
     if (!categoryDetails) {
       throw new Error("Unable to create new Category");
@@ -163,13 +162,38 @@ const createCategory = async (req) => {
   return responseData;
 };
 
+const categoryCombos = async (req) => {
+  let responseData = statusConst.error;
+  try {
+    const categoriesDetails = await models.categoryDetails.findAll({
+      where: { isActive: true },
+      include: [
+        {
+          model: models.item,
+          as: 'employeeItems',
+          required: false
+        },
+      ],
+      order: [["id", "DESC"]]
+    });
+    return responseData = {
+      status: 200, message: "data fetch successfully", data: categoriesDetails, success: true,
+    };
+  } catch (error) {
+    responseData = { status: 400, message: error.message, success: false };
+  }
+  return responseData;
+};
+
 
 const CategoryServices = {
   category,
   categoryDetails,
+  categoryCombos,
   createCategory,
   updateCategory,
   deleteCategory,
+
 };
 
 export default CategoryServices;

@@ -32,6 +32,14 @@ export const categoryDetails = async (req, res, next) => {
   });
 };
 
+export const categoryCombos = async (req, res, next) => {
+  categoryServices.categoryCombos(req).then((result) => {
+    res.status(result.status).send(result);
+  }).catch((err) => {
+    res.status(422).send({ status: 422, message: err.message || "Something went wrong!" });
+  });
+};
+
 // Update category info
 export const updateCategory = async (req, res, next) => {
   categoryServices.updateCategory(req).then((result) => {

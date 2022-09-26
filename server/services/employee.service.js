@@ -185,13 +185,28 @@ const assignItems = async (req) => {
       let assignItems = [];
       for (let i = 0; i < itemIds.length; i++) {
         const element = itemIds[i];
+        let neIndex = itemIds[([i] <= 0) ? [i] : [i] - 1];
+        let oldItem
+        if (i > 0) {
+          oldItem = await models.item.findOne({ where: { id: neIndex }, transaction: t });
+        }
         const item = await models.item.findOne({ where: { id: element }, transaction: t });
-        if (!item) { throw new Error("Item does not exist") };
-        if (item.isAssigned) { throw new Error(`This ${item.itemName} is already assing to another employee`) }
+      
+        if (!item) { throw new Error(`Item does not exist`) };
+        if ((oldItem && oldItem.itemName == item.itemName) || item.isAssigned) { throw new Error(`This ${item.itemName} is already assing to another employee`) }
 
         let itemInfo = { itemId: element, employeeId: employeeId, createdBy: createdBy, userId: createdBy, remarks: remarks }
         assignItems.push(itemInfo)
       }
+      let alreadyAssigned = await models.employeeAssignment.findAll({
+        where: { employeeId: employee.id },
+        include: [{
+          model: models.item,
+          as: "itemDetail",
+          attributes: ["itemName"]
+        }],
+        transaction: t
+      })
       let employeeAssigment = await models.employeeAssignment.bulkCreate(assignItems, { returning: true }, { transaction: t })
 
       if (!employeeAssigment) { throw new Error("Unable to assign item to employee"); }

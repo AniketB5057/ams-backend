@@ -24,7 +24,7 @@ const createItem = async (req) => {
     const categoryData = await models.categoryDetails.findOne({ where: { [Op.and]: { id: categoryId, isActive: true } } });
     if (!categoryData) { throw new Error("categoryDetails not found") }
 
-    const item = await models.item.create({ itemTag, itemName, description, serialNo, cost, datePurchased, categoryId, createdBy, userId: createdBy });
+    const item = await models.item.create({ itemTag, itemName : itemName.toLowerCase() , description, serialNo, cost, datePurchased, categoryId, createdBy, userId: createdBy });
 
     if (!item) {
       throw new Error("Unable to create new Item");

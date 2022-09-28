@@ -40,3 +40,10 @@ export const updateValidation = [
         .isEmpty()
         .withMessage("firstName is required"),
 ]
+
+export const assignItem = [
+    body("itemIds").not().isEmpty()
+        .withMessage("itemId is required"),
+    body("remarks").not().isEmpty()
+        .withMessage("remarks is required"),
+];

@@ -17,20 +17,23 @@ import { Op } from "sequelize";
  *
  * @param Request request
  */
-const login = async (req) => {
+/* const login = async (req) => {
   let responseData = statusConst.error;
   try {
     const { email, password } = req;
-    const User = await models.user.findOne({ where: { email: email, isActive: true } });
 
-    const userPassword = _.get(User, "password", null);
+    const User = await models.user.findOne({ where: { email: email, isActive: true } });
+    // console.log("--->",User);
+
+    const userPassword = _.get(User, "password" , null);
+    console.log("userPassword--->",userPassword);
+
     const validPassword = await bcrypt.compare(password, userPassword);
     if (!validPassword) { throw new Error("Incorrect password") }
 
-    if (!_.isEmpty(User) && validPassword) {
+    if (!_.isEmpty(User) && validPassword ) {
       const tokenData = await generateToken({ id: User.id });
       const token = _.get(tokenData, "token", null);
-      console.log(User);
       if (token) {
         await User.update({ token });
         responseData = { status: 200, message: "Login successful", data: { token } };
@@ -39,11 +42,40 @@ const login = async (req) => {
       throw new Error("Wrong credentials")
     }
   } catch (err) {
-    console.log("err->", err);
     responseData = { status: 422, message: err.message };
   }
   return responseData;
+}; */
+
+const login = async (req) => {
+  console.log("req---->>>",req);
+  let responseData = statusConst.error;
+  try {
+    const email = _.get(req, "email", null);
+    const password = _.get(req, "password", null);
+
+    // Find the user by email and if active
+
+    const User = await models.user.findOne({where: { email: email, isActive: true },});
+    const userPassword = _.get(User, "password", "");
+    const validPassword = await bcrypt.compare(password, userPassword);
+    
+     if (!_.isEmpty(User) && validPassword ) {
+      const tokenData = await generateToken({ id: User.id });
+      const token = _.get(tokenData, "token", null);
+      if (token) {
+        await User.update({ token });
+        responseData = { status: 200, message: "Login successful", data: { token } };
+      }
+    } else {
+      throw new Error("Incorrect email or password")
+    }
+   } catch (err) {
+    responseData = { ...statusConst.error, message: err.message };
+  }
+  return responseData;
 };
+
 
 const generateToken = async (options = {}) => {
   let responseData = statusConst.error;
@@ -166,15 +198,9 @@ const updateUser = async (req) => {
   const checkUser = _.get(req, "tokenUser", {});
   try {
     //Check if  exist
-    const user = await models.user.findOne({
-      where: { id: userId },
-    });
+    const user = await models.user.findOne({ where: { id: userId }, });
     if (!user) {
-      return {
-        ...statusConst.error,
-        message: "User not found",
-        success: false,
-      };
+      return { ...statusConst.error, message: "User not found", success: false, };
     } else {
       const userUpdatePayload = {
         user_role_id: data.user_role_id || "",
@@ -191,12 +217,7 @@ const updateUser = async (req) => {
       };
 
       const updatedUser = user.update({ ...userUpdatePayload });
-      responseData = {
-        ...statusConst.success,
-        message: "User udated successfully",
-        success: true,
-        updatedUser: updatedUser,
-      };
+      responseData = { ...statusConst.success, message: "User udated successfully", success: true, updatedUser: updatedUser, };
     }
   } catch (error) {
     responseData = { ...statusConst.error, message: error.message };
@@ -213,29 +234,16 @@ const logout = async (req) => {
       where: { id: tokenUser.id },
     });
     if (!user) {
-      return {
-        ...statusConst.error,
-        message: "user not found",
-        success: false,
-      };
+      return { ...statusConst.error, message: "user not found", success: false, };
     } else {
       user.update({ token: "" });
-      responseData = {
-        ...statusConst.success,
-        message: "user logout successfully",
-        success: true,
-      };
+      responseData = { ...statusConst.success, message: "user logout successfully", success: true, };
     }
   } catch (error) {
-    responseData = {
-      ...statusConst.error,
-      message: "User already loged out",
-      success: false,
-    };
+    responseData = { ...statusConst.error, message: "User already loged out", success: false, };
   }
   return responseData;
 };
-
 
 const UserServices = {
   createUser,

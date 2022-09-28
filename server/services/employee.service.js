@@ -171,33 +171,47 @@ const deleteEmployee = async (id) => {
 };
 
 const assignItems = async (req) => {
+
   let responseData = statusConst.error;
-  const userId = req.tokenUser.id
-  let { employeeId, itemId, remarks } = req.body;
+  let { employeeId, itemIds, remarks } = req.body;
+  const createdBy = req.tokenUser.id
   try {
-
+    if (!Array.isArray(itemIds)) { throw new Error("itemIds is not a array") }
+    
     const employeeAssigmentDetail = await sequelize.transaction(async (t) => {
-      const employeeData = await models.employee.findOne({ where: { id: employeeId }, transaction: t });
-      if (!employeeData) { throw new Error("employee not found") }
-
-      const item = await models.item.findOne({ where: { id: itemId }, transaction: t });
+      const employee = await models.employee.findOne({ where: { id: employeeId }, transaction: t })
+      if (!employee) { throw new Error("employee does not exist") }
       
-      if (!item) { throw new Error(`Item does not exist`) };
-      if ((item.itemName) || item.isAssigned) { throw new Error(`This ${item.itemName} is already assing to another employee`) }
+      let assignItems = [];
+      for (let i = 0; i < itemIds.length; i++) {
+        const element = itemIds[i];
+        let neIndex = itemIds[([i] <= 0) ? [i] : [i] - 1];
+        let oldItem
+        if (i > 0) {
+          oldItem = await models.item.findOne({ where: { id: neIndex }, transaction: t });
+        }
+        const item = await models.item.findOne({ where: { id: element }, transaction: t });
+      
 
+        if (!item) { throw new Error(`Item does not exist`) };
+        if ((oldItem && oldItem.itemName == item.itemName) || item.isAssigned) { throw new Error(`This ${item.itemName} is already assing to another employee`) }
+
+        let itemInfo = { itemId: element, employeeId: employeeId, createdBy: createdBy, userId: createdBy, remarks: remarks }
+        assignItems.push(itemInfo)
+      }
       let alreadyAssigned = await models.employeeAssignment.findAll({
-        where: { employeeId: employeeData.id },
+        where: { employeeId: employee.id },
         include: [{
           model: models.item,
-          attributes: ["itemName"],
           as: "itemDetail",
+          attributes: ["itemName" , "datePurchased"]
         }],
         transaction: t
       })
-      const employeeAssigment = await models.employeeAssignment.create({ employeeId, itemId, remarks, userId, createdBy: userId }, { transaction: t });
+      let employeeAssigment = await models.employeeAssignment.bulkCreate(assignItems, { returning: true }, { transaction: t })
 
       if (!employeeAssigment) { throw new Error("Unable to assign item to employee"); }
-      await models.item.update({ isAssigned: true }, { where: { id: itemId } }, { transaction: t })
+      await models.item.update({ isAssigned: true }, { where: { id: { [Op.in]: itemIds } }, transaction: t })
 
       return employeeAssigment
     });

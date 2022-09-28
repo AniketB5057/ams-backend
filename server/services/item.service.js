@@ -17,14 +17,15 @@ import moment from "moment";
 const createItem = async (req) => {
   let responseData = statusConst.error;
   const createdBy = req.tokenUser.id
-  let { itemName, description, serialNo, cost, datePurchased, categoryId } = req.body;
+  let {itemName, description, serialNo, cost, datePurchased, categoryId } = req.body;
   try {
 
     const itemTag = uniqueId.time().toUpperCase();
+
     const categoryData = await models.categoryDetails.findOne({ where: { [Op.and]: { id: categoryId, isActive: true } } });
     if (!categoryData) { throw new Error("categoryDetails not found") }
 
-    const item = await models.item.create({ itemTag, itemName : itemName.toLowerCase() , description, serialNo, cost, datePurchased, categoryId, createdBy, userId: createdBy });
+    const item = await models.item.create({ itemTag, itemName , description, serialNo, cost, datePurchased, categoryId, createdBy, userId: createdBy });
 
     if (!item) {
       throw new Error("Unable to create new Item");

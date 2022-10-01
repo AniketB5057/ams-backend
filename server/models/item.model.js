@@ -45,6 +45,12 @@ export default (sequelize, DataTypes) => {
             field: "is_assigned",
             defaultValue: false,
         },
+        typeOfAsset: {
+            type: DataTypes.ENUM,
+            field: "type_of_asset",
+            values: ['inhouse', 'outsource'],
+            defaultValue: 'inhouse',
+        },
         createdBy: {
             type: DataTypes.INTEGER,
             field: "created_by",

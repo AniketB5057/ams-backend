@@ -8,6 +8,7 @@ const _ = { get, isEmpty, has };
 import { commonStatuses } from "../common/appConstants";
 import { Op } from "sequelize";
 import moment from "moment";
+import sequelize from "sequelize";
 
 /**
  * Category registrasion
@@ -17,7 +18,7 @@ import moment from "moment";
 const createItem = async (req) => {
   let responseData = statusConst.error;
   const createdBy = req.tokenUser.id
-  let {itemName, description, serialNo, cost, datePurchased, categoryId } = req.body;
+  let { itemName, typeOfAsset, description, serialNo, cost, datePurchased, categoryId } = req.body;
   try {
 
     const itemTag = uniqueId.time().toUpperCase();
@@ -25,7 +26,7 @@ const createItem = async (req) => {
     const categoryData = await models.categoryDetails.findOne({ where: { [Op.and]: { id: categoryId, isActive: true } } });
     if (!categoryData) { throw new Error("categoryDetails not found") }
 
-    const item = await models.item.create({ itemTag, itemName , description, serialNo, cost, datePurchased, categoryId, createdBy, userId: createdBy });
+    const item = await models.item.create({ itemTag, typeOfAsset, itemName, description, serialNo, cost, datePurchased, categoryId, createdBy, userId: createdBy });
 
     if (!item) {
       throw new Error("Unable to create new Item");
@@ -59,6 +60,10 @@ const itemDetails = async (req) => {
         first_name: { [Op.like]: `%${searchText}%` },
         last_name: { [Op.like]: `%${searchText}%` },
         id: { [Op.like]: `%${searchText}%` },
+        typeOfAsset: sequelize.where(
+          sequelize.cast(sequelize.col("item.typeOfAsset"), "varchar"), {
+          [Op.like]: `%${searchText}%`
+        })
       },
       isActive: true
     };
@@ -102,10 +107,11 @@ const itemDetails = async (req) => {
 };
 
 const itemGet = async (itemId) => {
+  console.log("itemId",itemId );
   let responseData = statusConst.error;
   try {
     const itemData = await models.item.findOne({
-      where: { [Op.and]: { id: itemId, isActive: true } },
+      where: { [Op.and]: { id: itemId, isActive: true }},
       include: [
         {
           model: models.categoryDetails,

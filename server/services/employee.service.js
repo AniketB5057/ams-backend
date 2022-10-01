@@ -20,7 +20,7 @@ const createEmployee = async (req) => {
   const createdBy = req.tokenUser.id
   try {
     let employee = await sequelize.transaction(async (t) => {
-
+      
       const employee = await models.employee.create({ email, firstName, lastName, phone, departmentId, description, employeeUniqueId, userId: createdBy, createdBy }, { transaction: t });
       if (!employee) { throw new Error("Unable to create new employee") }
 
@@ -33,6 +33,8 @@ const createEmployee = async (req) => {
     })
 
     responseData = { status: 200, message: "employee create successfully", success: true, data: employee };
+
+
   } catch (error) {
 
     let errors = {};

@@ -4,6 +4,10 @@ export const createValidation = [
     body("email").not().isEmpty().withMessage("Email is required")
         .isEmail()
         .withMessage("Valid email address is required"),
+    body("departmentId")
+        .not()
+        .isEmpty()
+        .withMessage("departmentId is required"),
     body("password")
         .not()
         .isEmpty()
@@ -26,19 +30,30 @@ export const createValidation = [
             return true;
         }),
     body("firstName").not().isEmpty()
-        .withMessage("First name is required"),
+        .withMessage("First name is required")
+        .matches("^[a-zA-Z_]*$")
+        .withMessage("Invalid firstname , use only alphabet & underscore"),
     body("lastName").not().isEmpty()
-        .withMessage("Last name is required"),
+        .withMessage("Lirst name is required")
+        .matches("^[a-zA-Z_]*$")
+        .withMessage("Invalid lirstname , use only alphabet & underscore"),
     body("phone").not().isEmpty()
         .withMessage("Phone number is required")
         .isLength({ min: 10, max: 10 }).withMessage("Incorrect phone number"),
 ];
 
 export const updateValidation = [
+    body("departmentId")
+        .not(),
     body("firstName")
-        .not()
-        .isEmpty()
-        .withMessage("firstName is required"),
+        .not(),
+    body("lastName")
+        .not(),
+    body("phone").not()
+        .isLength({ min: 10, max: 10 }).withMessage("Incorrect phone number"),
+    body("email").not().isEmpty().withMessage("Email is required")
+        .isEmail()
+        .withMessage("Valid email address is required"),
 ]
 
 export const assignItem = [
@@ -46,4 +61,6 @@ export const assignItem = [
         .withMessage("itemId is required"),
     body("remarks").not().isEmpty()
         .withMessage("remarks is required"),
+    body("employeeId").not().isEmpty()
+        .withMessage("employeeId is required"),
 ];

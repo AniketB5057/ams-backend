@@ -112,7 +112,6 @@ const deleteDepartment = async (departmentId) => {
   return responseData;
 };
 
-
 const dataServices = {
   createDepartment,
   updateDepartment,

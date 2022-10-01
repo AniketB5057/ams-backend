@@ -65,7 +65,7 @@ export default (sequelize, DataTypes) => {
     item.associate = function (models) {
         item.belongsTo(models.user, { foreignKey: 'userId', as: 'user' });
         item.belongsTo(models.categoryDetails, { foreignKey: 'categoryId', as: 'category' });
-        item.hasMany(models.employeeAssignment, { foreignKey: 'id', as: 'employeeItems' });
+        item.hasMany(models.employeeAssignment, { foreignKey: 'itemId', as: 'employeeItems' });
         item.hasOne(models.itemImage, { foreignKey: 'itemId', as: 'itemImage' });
 
         item.belongsTo(models.user, { foreignKey: 'createdBy', as: 'createdby' });

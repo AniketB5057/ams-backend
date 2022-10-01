@@ -6,49 +6,16 @@ const _ = { get, isEmpty, isObject, omit, find, chain, has };
 import models from "../models";
 import appConfig from "../common/appConfig";
 import { userRoles, commonStatuses } from "../common/appConstants";
-import Helper from "../common/helper";
 import uniqueId from "uniqid";
 import dbHelper from "../common/dbHelper";
-import modelConstants from "../common/modelConstants";
-import { Op } from "sequelize";
 
 /**
  * Login to user and generate JWT
  *
  * @param Request request
  */
-/* const login = async (req) => {
-  let responseData = statusConst.error;
-  try {
-    const { email, password } = req;
-
-    const User = await models.user.findOne({ where: { email: email, isActive: true } });
-    // console.log("--->",User);
-
-    const userPassword = _.get(User, "password" , null);
-    console.log("userPassword--->",userPassword);
-
-    const validPassword = await bcrypt.compare(password, userPassword);
-    if (!validPassword) { throw new Error("Incorrect password") }
-
-    if (!_.isEmpty(User) && validPassword ) {
-      const tokenData = await generateToken({ id: User.id });
-      const token = _.get(tokenData, "token", null);
-      if (token) {
-        await User.update({ token });
-        responseData = { status: 200, message: "Login successful", data: { token } };
-      }
-    } else {
-      throw new Error("Wrong credentials")
-    }
-  } catch (err) {
-    responseData = { status: 422, message: err.message };
-  }
-  return responseData;
-}; */
 
 const login = async (req) => {
-  console.log("req---->>>",req);
   let responseData = statusConst.error;
   try {
     const email = _.get(req, "email", null);
@@ -56,11 +23,11 @@ const login = async (req) => {
 
     // Find the user by email and if active
 
-    const User = await models.user.findOne({where: { email: email, isActive: true },});
+    const User = await models.user.findOne({ where: { email: email, isActive: true }, });
     const userPassword = _.get(User, "password", "");
     const validPassword = await bcrypt.compare(password, userPassword);
-    
-     if (!_.isEmpty(User) && validPassword ) {
+
+    if (!_.isEmpty(User) && validPassword) {
       const tokenData = await generateToken({ id: User.id });
       const token = _.get(tokenData, "token", null);
       if (token) {
@@ -70,12 +37,11 @@ const login = async (req) => {
     } else {
       throw new Error("Incorrect email or password")
     }
-   } catch (err) {
+  } catch (err) {
     responseData = { ...statusConst.error, message: err.message };
   }
   return responseData;
 };
-
 
 const generateToken = async (options = {}) => {
   let responseData = statusConst.error;

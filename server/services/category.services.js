@@ -27,7 +27,6 @@ const category = async (categoryId) => {
 };
 
 //  Category Details
-
 const categoryDetails = async (req) => {
   let responseData = statusConst.error;
   const entityParams = _.get(req, "query", {});
@@ -75,9 +74,7 @@ const updateCategory = async (req) => {
   let { categoryName, description } = req.body;
   try {
     //Check if  exist
-    const category = await models.categoryDetails.findOne({
-      where: { id: categoryId },
-    });
+    const category = await models.categoryDetails.findOne({ where: { id: categoryId }, });
 
     if (!category) {
       return { status: 404, message: "category not found", success: false };
@@ -106,7 +103,6 @@ const deleteCategory = async (id) => {
   let responseData = statusConst.error;
 
   try {
-
     //Check if  exist
     const category = await models.categoryDetails.findOne({
       where: { id: id },
@@ -166,7 +162,7 @@ const categoryCombos = async (req) => {
   let responseData = statusConst.error;
   try {
     const categoriesDetails = await models.categoryDetails.findAll({
-      where: { isActive: true },
+      where: { isActive: true, },
       include: [
         {
           model: models.item,
@@ -174,7 +170,7 @@ const categoryCombos = async (req) => {
           required: false
         },
       ],
-      order: [["id", "DESC"]]
+      order: [["id", "DESC"]],
     });
     return responseData = {
       status: 200, message: "data fetch successfully", data: categoriesDetails, success: true,
@@ -184,7 +180,6 @@ const categoryCombos = async (req) => {
   }
   return responseData;
 };
-
 
 const CategoryServices = {
   category,

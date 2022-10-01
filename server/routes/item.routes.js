@@ -12,7 +12,7 @@ router.post("/create", [authMiddleware, createItem, validateRequest], createItem
 router.get("/", authMiddleware, itemDetails);
 router.get("/:id", authMiddleware, singleItem);
 
-router.put("/:id", [authMiddleware, createItem, validateRequest], updateItem);
+router.put("/:id", [authMiddleware, updateItem, validateRequest], updateItem);
 
 router.delete("/:id", authMiddleware, deleteItem);
 

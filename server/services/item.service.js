@@ -47,7 +47,6 @@ const createItem = async (req) => {
   return responseData;
 };
 
-
 const itemDetails = async (req) => {
   let responseData = statusConst.error;
   const entityParams = _.get(req, "query", {});

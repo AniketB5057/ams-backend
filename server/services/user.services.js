@@ -166,7 +166,7 @@ const updateUser = async (req) => {
     //Check if  exist
     const user = await models.user.findOne({ where: { id: userId }, });
     if (!user) {
-      return { ...statusConst.error, message: "User not found", success: false, };
+      return { status: 200, message: "User not found", success: false, };
     } else {
       const userUpdatePayload = {
         user_role_id: data.user_role_id || "",
@@ -183,10 +183,10 @@ const updateUser = async (req) => {
       };
 
       const updatedUser = user.update({ ...userUpdatePayload });
-      responseData = { ...statusConst.success, message: "User udated successfully", success: true, updatedUser: updatedUser, };
+      responseData = { status: 200, message: "User udated successfully", success: true, updatedUser: updatedUser, };
     }
   } catch (error) {
-    responseData = { ...statusConst.error, message: error.message };
+    responseData = { status: 200, message: error.message };
   }
   return responseData;
 };
@@ -200,13 +200,13 @@ const logout = async (req) => {
       where: { id: tokenUser.id },
     });
     if (!user) {
-      return { ...statusConst.error, message: "user not found", success: false, };
+      return { status: 200, message: "user not found", success: false, };
     } else {
       user.update({ token: "" });
-      responseData = { ...statusConst.success, message: "user logout successfully", success: true, };
+      responseData = { status: 200, message: "user logout successfully", success: true, };
     }
   } catch (error) {
-    responseData = { ...statusConst.error, message: "User already loged out", success: false, };
+    responseData = { status: 200, message: "User already loged out", success: false, };
   }
   return responseData;
 };

@@ -49,6 +49,14 @@ export default (sequelize, DataTypes) => {
                 })
             }
         },
+       /*  cryptoKeyCredentials:{
+            type: DataTypes.JSON,
+            field: "crypto_key_credentials",
+        }, */
+        barcode:{
+            type: DataTypes.STRING,
+            field: "barcode",
+        },
         isActive: {
             type: DataTypes.BOOLEAN,
             field: "is_active",

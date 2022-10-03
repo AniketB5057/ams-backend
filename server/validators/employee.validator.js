@@ -49,7 +49,8 @@ export const updateValidation = [
         .not(),
     body("lastName")
         .not(),
-    body("phone").not()
+    body("phone").not().isEmpty()
+        .withMessage("Phone number is required")
         .isLength({ min: 10, max: 10 }).withMessage("Incorrect phone number"),
     body("email").not().isEmpty().withMessage("Email is required")
         .isEmail()

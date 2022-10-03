@@ -59,7 +59,6 @@ export const comboDetails = async (req, res, next) => {
   employeeServices.employeeComboDetail(req).then((result) => {
     res.status(200).send(result);
   }).catch((error) => {
-    console.log("errror-->", error);
     res.status(422).send({ status: 422, message: error.message || "Something went wrong!", });
   });
 };

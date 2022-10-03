@@ -4,10 +4,12 @@ import dbHelper from "../common/dbHelper";
 import Helper from "../common/helper";
 import uniqueId from "uniqid";
 import { get, isEmpty, has } from "lodash";
-import { UNIQUEID } from "../utils/constant"
 const _ = { get, isEmpty, has };
 import { Op, where } from "sequelize";
 const sequelize = models.sequelize;
+import { UNIQUEID } from "../utils/constant"
+import { encrypt, decrypt } from "../utils/encrypDecrypt";
+import TinyURL from "tinyurl";
 /**
  * data registrasion
  *
@@ -20,21 +22,26 @@ const createEmployee = async (req) => {
   const createdBy = req.tokenUser.id
   try {
     let employee = await sequelize.transaction(async (t) => {
-      
+
       const employee = await models.employee.create({ email, firstName, lastName, phone, departmentId, description, employeeUniqueId, userId: createdBy, createdBy }, { transaction: t });
       if (!employee) { throw new Error("Unable to create new employee") }
+
+      let cryptoKeyCredentials = encrypt(employee.id);
+      let barcode = null;
+
+      await TinyURL.shorten(`${process.env.BASE_URL}/api/employee/${cryptoKeyCredentials}`).then((res, err) => {
+        if (err) { throw new Error("Unable to create new employee") }
+        barcode = res.slice(-8)
+      });
 
       const idLength = employee.id.toString().length;
       const newId = UNIQUEID.substring(0, UNIQUEID.length - idLength);
       let employeeUniqueId = `${newId}${employee.id}`;
 
-      await employee.update({ employeeUniqueId }, { where: { id: employee.id }, transaction: t })
+      await employee.update({ employeeUniqueId, barcode }, { where: { id: employee.id }, transaction: t })
       return employee
     })
-
     responseData = { status: 200, message: "employee create successfully", success: true, data: employee };
-
-
   } catch (error) {
 
     let errors = {};
@@ -51,7 +58,6 @@ const createEmployee = async (req) => {
   return responseData;
 };
 
-//  employee Details
 const employeeDetails = async (req) => {
   let responseData = statusConst.error;
   const entityParams = _.get(req, "query", {});
@@ -105,16 +111,19 @@ const employeeDetails = async (req) => {
   return responseData;
 };
 
-// Single employee detail
-const employee = async (employeeId) => {
+const employee = async (data) => {
   let responseData = statusConst.error;
   try {
+
+    let employeeId = decrypt(data);
     const employeeData = await models.employee.findOne({
       where: { [Op.and]: { id: employeeId, isActive: true } },
+      attributes: ["employeeUniqueId", "departmentId", "email", "firstName", "lastName", "phone"],
       include: [{
         model: models.department,
+        attributes: ["name", "departmentUniqueId", "description"],
         as: "departmentDetails",
-      }],
+      }]
     });
 
     if (employeeData) {
@@ -123,12 +132,7 @@ const employee = async (employeeId) => {
       responseData = { status: 400, message: "employee does not exist", success: false };
     }
   } catch (error) {
-    console.log(error);
-    responseData = {
-      status: 400,
-      message: "employee not found",
-      success: false,
-    };
+    responseData = {status: 400,message: "employee not found",success: false, };
   }
   return responseData;
 };
@@ -179,11 +183,11 @@ const assignItems = async (req) => {
   const createdBy = req.tokenUser.id
   try {
     if (!Array.isArray(itemIds)) { throw new Error("itemIds is not a array") }
-    
+
     const employeeAssigmentDetail = await sequelize.transaction(async (t) => {
       const employee = await models.employee.findOne({ where: { id: employeeId }, transaction: t })
       if (!employee) { throw new Error("employee does not exist") }
-      
+
       let assignItems = [];
       for (let i = 0; i < itemIds.length; i++) {
         const element = itemIds[i];
@@ -193,7 +197,7 @@ const assignItems = async (req) => {
           oldItem = await models.item.findOne({ where: { id: neIndex }, transaction: t });
         }
         const item = await models.item.findOne({ where: { id: element }, transaction: t });
-      
+
 
         if (!item) { throw new Error(`Item does not exist`) };
         if ((oldItem && oldItem.itemName == item.itemName) || item.isAssigned) { throw new Error(`This ${item.itemName} is already assing to another employee`) }
@@ -206,7 +210,7 @@ const assignItems = async (req) => {
         include: [{
           model: models.item,
           as: "itemDetail",
-          attributes: ["itemName" , "datePurchased"]
+          attributes: ["itemName", "datePurchased"]
         }],
         transaction: t
       })
@@ -226,7 +230,6 @@ const assignItems = async (req) => {
 };
 
 const employeeComboDetail = async (req) => {
-  // let responseData = { status: 400, data: employeeAssigment, success: false };
   let { employeeId } = req.params
   let responseData;
   let employeeAssigment = await models.employeeAssignment.findAll({

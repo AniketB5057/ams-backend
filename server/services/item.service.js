@@ -107,11 +107,10 @@ const itemDetails = async (req) => {
 };
 
 const itemGet = async (itemId) => {
-  console.log("itemId",itemId );
   let responseData = statusConst.error;
   try {
     const itemData = await models.item.findOne({
-      where: { [Op.and]: { id: itemId, isActive: true }},
+      where: { [Op.and]: { id: itemId, isActive: true } },
       include: [
         {
           model: models.categoryDetails,
@@ -135,7 +134,7 @@ const itemGet = async (itemId) => {
 const updateItem = async (req) => {
   let responseData = statusConst.error;
   const updatedBy = req.tokenUser.id
-  const { itemName, description, serialNo, cost, datePurchased, qty, categoryId } = req.body;
+  const { itemName, typeOfAsset, description, serialNo, cost, datePurchased, categoryId } = req.body;
   const { id } = req.params;
   try {
     const item = await models.item.findOne({ where: { id: id } });
@@ -146,7 +145,7 @@ const updateItem = async (req) => {
     if (!item) {
       throw new Error("item not found")
     } else {
-      item.update({ itemName, description, serialNo, cost, datePurchased, qty, categoryId, updatedBy });
+      item.update({ itemName, typeOfAsset, description, serialNo, cost, datePurchased, categoryId, updatedBy });
     }
     responseData = { status: 200, message: "data update successfully", success: true };
   } catch (error) {

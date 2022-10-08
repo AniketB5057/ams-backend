@@ -7,6 +7,10 @@ export default (sequelize, DataTypes) => {
             type: DataTypes.STRING,
             field: "employee_unique_id",
         },
+        uniqueId: {
+            type: DataTypes.STRING,
+            field: "unique_id",
+        },
         email: {
             type: DataTypes.STRING,
             validate: {

@@ -22,15 +22,15 @@ const createEmployee = async (req) => {
   const createdBy = req.tokenUser.id
   try {
     let employee = await sequelize.transaction(async (t) => {
-
-      const employee = await models.employee.create({ email, firstName, lastName, phone, departmentId, description, employeeUniqueId, userId: createdBy, createdBy }, { transaction: t });
+      let uniqId = uniqueId()
+      const employee = await models.employee.create({ email, firstName, lastName, phone, departmentId, description, uniqueId:uniqId, employeeUniqueId, userId: createdBy, createdBy }, { transaction: t });
       if (!employee) { throw new Error("Unable to create new employee") }
 
       let cryptoKeyCredentials = encrypt(employee.id);
       let barcode = null;
-
-      await TinyURL.shorten(`${process.env.BASE_URL}/api/employee/${cryptoKeyCredentials}`).then((res, err) => {
+      await TinyURL.shorten(`${process.env.BASE_URL}/api/employee/askldts/${uniqId}`).then((res, err) => {
         if (err) { throw new Error("Unable to create new employee") }
+       
         barcode = res.slice(-8)
       });
 
@@ -111,13 +111,13 @@ const employeeDetails = async (req) => {
   return responseData;
 };
 
-const employee = async (data) => {
+const employee = async (employeeId) => {
   let responseData = statusConst.error;
   try {
-
-    let employeeId = decrypt(data);
+    console.log(employeeId);
+    // let employeeId = decrypt(data);
     const employeeData = await models.employee.findOne({
-      where: { [Op.and]: { id: employeeId, isActive: true } },
+      where: { [Op.and]: { uniqueId: employeeId, isActive: true } },
       attributes: ["employeeUniqueId", "departmentId", "email", "firstName", "lastName", "phone"],
       include: [{
         model: models.department,
@@ -132,7 +132,7 @@ const employee = async (data) => {
       responseData = { status: 400, message: "employee does not exist", success: false };
     }
   } catch (error) {
-    responseData = {status: 400,message: "employee not found",success: false, };
+    responseData = { status: 400, message: "employee not found", success: false, };
   }
   return responseData;
 };
@@ -232,8 +232,14 @@ const assignItems = async (req) => {
 const employeeComboDetail = async (req) => {
   let { employeeId } = req.params
   let responseData;
+  let employee = await models.employee.findOne({
+    where: { uniqueId: employeeId }
+  })
+
+  if (!employee) { throw new Error("employee details not found"); }
+
   let employeeAssigment = await models.employeeAssignment.findAll({
-    where: { employeeId },
+    where: { employeeId: employee.id },
     attributes: ["dateAssigned"],
     include: [{
       model: models.item,

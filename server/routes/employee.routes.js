@@ -12,7 +12,7 @@ router.post("/assign-items", [authMiddleware, assignItem, validateRequest], assi
 router.get("/combo-details/:employeeId", authMiddleware, comboDetails);
 
 router.get("/", authMiddleware, employeeDetails);
-router.get("/:id", employee);
+router.get("/askldts/:id", employee);
 
 
 router.put("/:id", [authMiddleware, updateValidation, validateRequest], updateEmployee);

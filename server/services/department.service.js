@@ -4,6 +4,7 @@ import dbHelper from "../common/dbHelper";
 import uniqueId from "uniqid";
 import { get, isEmpty, isObject } from "lodash";
 const _ = { get, isEmpty };
+import Helper from "../common/helper";
 import { commonStatuses } from "../common/appConstants";
 import { Op } from "sequelize";
 
@@ -65,14 +66,25 @@ const updateDepartment = async (req) => {
 
 const getallDepartment = async (req) => {
   let responseData = statusConst.error;
+  const entityParams = _.get(req, "query", {});
   try {
-    const departmentData = await models.department.findAll({ where: { isActive: true } });
+
+    const {  pagination } = Helper.dataPagination(entityParams);
+
+    const departmentData = await models.department.findAndCountAll({ where: { isActive: true } });
     if (!departmentData) {
       throw new Error("department not found")
     } else {
       responseData = { status: 200, success: true, departmentData };
+    
+      if (departmentData.rows.length > 0) {
+        pagination["totalPages"] = Math.ceil(
+          (departmentData || departmentData).count / pagination.pageSize
+        );
+        pagination["pageRecords"] =
+          ((departmentData || {}).rows || []).length || 0;
     }
-  } catch (error) {
+ } } catch (error) {
     responseData = { status: 400, message: error.message, success: false };
   }
   return responseData;

@@ -1,23 +1,16 @@
 import appConfig from "../common/appConfig";
-import crypto from 'crypto';
-
+import crypto from "crypto-js";
 
 export const encrypt = (id) => {
     id = id.toString()
-    const iv = crypto.randomBytes(16);
-
-    const cipher = crypto.createCipheriv(appConfig.algorithm, appConfig.sercetKey, iv);
-    const encrypted = Buffer.concat([cipher.update(id), cipher.final()]);
-
-    let hash = `${iv.toString('hex')}-${encrypted.toString('hex')}`
-    return hash
+    const encryptedId = crypto.AES.encrypt(id, appConfig.sercetKey).toString();
+    return encryptedId;
 };
 
-export const decrypt = (data) => {
-    data = data.split("-");
-    let hash = { "iv": data[0], "content": data[1] };
-    const decipher = crypto.createDecipheriv(appConfig.algorithm, appConfig.sercetKey, Buffer.from(hash.iv, 'hex'));
+export const decrypt = (encryptedId) => {
+    let encryptId = encryptedId.replace(/\s/g, "");
+    let bytes = crypto.AES.decrypt(encryptId, appConfig.sercetKey);
+    let decrpyted = bytes.toString(crypto.enc.Utf8);
 
-    const decrpyted = Buffer.concat([decipher.update(Buffer.from(hash.content, 'hex')), decipher.final()]);
-    return decrpyted.toString();
+    return decrpyted;
 };

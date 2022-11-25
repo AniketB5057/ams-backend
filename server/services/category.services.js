@@ -1,13 +1,8 @@
 import statusConst from "../common/statusConstants";
 import _ from "lodash";
 import models from "../models";
-import appConfig from "../common/appConfig";
-import { userRoles, commonStatuses } from "../common/appConstants";
 import Helper from "../common/helper";
-import dbHelper from "../common/dbHelper";
-import modelConstants from "../common/modelConstants";
 import { and, Op } from "sequelize";
-import sequelize from "sequelize";
 
 // Single category detail
 const category = async (categoryId) => {
@@ -71,7 +66,7 @@ const updateCategory = async (req) => {
   // let createdBy =
 
   const categoryId = _.get(req, "params.id", 0);
-  let { categoryName, description } = req.body;
+  let { categoryName } = req.body;
   try {
     //Check if  exist
     const category = await models.categoryDetails.findOne({ where: { id: categoryId }, });
@@ -80,7 +75,7 @@ const updateCategory = async (req) => {
       return { status: 404, message: "category not found", success: false };
     } else {
       categoryName = categoryName.toUpperCase();
-      let catetoryData = category.update({ categoryName, description, isActive: true });
+      let catetoryData = category.update({ categoryName, isActive: true });
 
       if (_.isEmpty(catetoryData)) {
         responseData = { status: 200, message: "Unable to updated category", success: true };
@@ -101,30 +96,26 @@ const updateCategory = async (req) => {
  */
 const deleteCategory = async (id) => {
   let responseData = statusConst.error;
-
   try {
-    //Check if  exist
-    const category = await models.categoryDetails.findOne({
-      where: { id: id },
-    });
-
-    if (!category) {
-      return { status: 200, message: "category not found", success: false };
+    const category = await models.categoryDetails.findOne({ where: { id: id }, });
+    let statuschange;
+    if (category.isActive == 0) {
+      statuschange = 1;
     } else {
-
-      let catetoryData = category.update({ isActive: false });
-      if (_.isEmpty(catetoryData)) {
-        responseData = { status: 200, message: "Unable to deleted category", success: true };
-      } else {
-        responseData = { status: 200, message: "Category deleted successfully", success: true };
-      }
+      statuschange = 0;
     }
-
+    let catetoryData = category.update({ isActive: statuschange });
+    if (_.isEmpty(catetoryData)) {
+      responseData = { status: 200, message: "Unable to deleted category", success: true };
+    } else {
+      responseData = { status: 200, message: "Category deleted successfully", success: true };
+    }
   } catch (error) {
     responseData = { ...statusConst.error, message: error.message };
   }
   return responseData;
 };
+
 
 /**
  * Category registrasion
@@ -134,10 +125,10 @@ const deleteCategory = async (id) => {
 const createCategory = async (req) => {
   let responseData = statusConst.error;
 
-  let { categoryName, description, itemId } = req.body;
+  let { categoryName, itemId } = req.body;
   try {
     categoryName = categoryName.toUpperCase()
-    const categoryDetails = await models.categoryDetails.create({ categoryName, description, itemId });
+    const categoryDetails = await models.categoryDetails.create({ categoryName, itemId });
 
     if (!categoryDetails) {
       throw new Error("Unable to create new Category");
@@ -149,7 +140,7 @@ const createCategory = async (req) => {
     responseData = { status: 400, message: error.message };
     try {
       if (["SequelizeValidationError", "SequelizeUniqueConstraintError"].includes(error.name)) {
-        responseData = { status: 200, errors, success: false };
+        responseData = { status: 200, message: "Category already exist", success: false }
       }
     } catch (error) {
       responseData = { message: error.message };

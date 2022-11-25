@@ -13,6 +13,10 @@ export default (sequelize, DataTypes) => {
             type: DataTypes.STRING(20),
             field: "remarks",
         },
+        comboId: {
+            type: DataTypes.STRING(20),     
+            field: "combo_id", 
+        },
         dateAssigned: {
             type: DataTypes.DATE,
             field: "date_assigned",

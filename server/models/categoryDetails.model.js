@@ -13,10 +13,6 @@ export default (sequelize, DataTypes) => {
                 })
             }
         },
-        description: {
-            type: DataTypes.STRING,
-            field: "description",
-        },
         userId: {
             type: DataTypes.INTEGER,
             field: "user_id",

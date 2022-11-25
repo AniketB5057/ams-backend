@@ -5,7 +5,6 @@ export const createValidation = [
     .not()
     .isEmpty()
     .withMessage("Category name is required"),
-  body("description").not().isEmpty().withMessage("description is required"),
 ];
 
 export const updateValidation = [
@@ -13,5 +12,4 @@ export const updateValidation = [
     .not()
     .isEmpty()
     .withMessage("Category name is required"),
-  body("description").not().isEmpty().withMessage("description is required"),
 ];

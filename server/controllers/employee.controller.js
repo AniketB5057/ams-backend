@@ -22,7 +22,6 @@ export const employeeDetails = async (req, res, next) => {
 
 export const employee = async (req, res, next) => {
   const employeeId = _.get(req, "params.id", 0);
-
   employeeServices.employee(employeeId).then((result) => {
     res.status(result.status).send(result);
   }).catch((err) => {
@@ -60,5 +59,30 @@ export const comboDetails = async (req, res, next) => {
     res.status(200).send(result);
   }).catch((error) => {
     res.status(422).send({ status: 422, message: error.message || "Something went wrong!", });
+  });
+};
+
+export const itemassign = async (req, res) => {
+  const employeeId = _.get(req, "params.id", 0);
+  employeeServices.getItemAssign(employeeId).then((result) => {
+    res.status(result.status).send(result);
+  }).catch((err) => {
+    res.status(422).send({ status: 422, message: err.message || "Something went wrong!" });
+  });
+};
+
+export const assignDetails = async (req, res, next) => {
+  employeeServices.assignItemDetails(req).then((result) => {
+    res.status(result.status).send(result);
+  }).catch((err) => {
+    res.status(422).send({ status: 422, message: err.message || "Something went wrong!" });
+  });
+};
+
+export const updateAssignItem = async (req, res, next) => {
+  employeeServices.updateAssignItem(req).then((result) => {
+    res.status(200).send(result);
+  }).catch((err) => {
+    res.status(422).send({ status: 422, message: err.message || "Something went wrong!" });
   });
 };

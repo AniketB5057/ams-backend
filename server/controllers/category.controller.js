@@ -6,7 +6,6 @@ const _ = { get, isEmpty };
 // Single Category info
 export const category = async (req, res) => {
   const categoryId = _.get(req, "params.id", 0);
-
   categoryServices.category(categoryId).then((result) => {
     res.status(result.status).send(result);
   }).catch((err) => {

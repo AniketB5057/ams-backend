@@ -39,7 +39,7 @@ var sequelize = new Sequelize(DATABASE, USERNAME, PASSWORD, {
 
 try {
   // Attempt to connect to the database
-  // sequelize.sync({ force: true })
+  // sequelize.sync({ force: false }) 
   sequelize.authenticate()
     .then(conn => {
       console.log("Connection has been established successfully");

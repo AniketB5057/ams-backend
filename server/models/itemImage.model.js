@@ -51,7 +51,7 @@ export default (sequelize, DataTypes) => {
         var values = Object.assign({}, this.get({ plain: true }));
 
         if (values.imagePath) {
-            values.imagePath = process.env.BASE_URL + imgUrl;
+            values.imagePath = process.env.NGROK_URL + imgUrl;
         }
         return values;
     }

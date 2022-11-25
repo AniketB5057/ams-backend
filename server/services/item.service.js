@@ -3,11 +3,9 @@ import models from "../models";
 import dbHelper from "../common/dbHelper";
 import Helper from "../common/helper";
 import uniqueId from "uniqid";
-import { get, isEmpty, has, isObject } from "lodash";
+import { get, isEmpty, has, isObject, stubTrue } from "lodash";
 const _ = { get, isEmpty, has };
-import { commonStatuses } from "../common/appConstants";
 import { Op } from "sequelize";
-import moment from "moment";
 import sequelize from "sequelize";
 
 /**
@@ -73,7 +71,6 @@ const itemDetails = async (req) => {
     const { offset, limit, pagination } = Helper.dataPagination(entityParams);
 
     const itemDeatail = await models.item.findAndCountAll({
-      where: defaultWhere,
       include: [
         {
           model: models.categoryDetails,
@@ -158,9 +155,13 @@ const deleteItem = async (id) => {
   let responseData = statusConst.error;
   try {
     let itemDatae = await models.item.findOne({ where: { id: id } });
-    if (itemDatae.isActive == 0) { throw new Error("item already deleted") }
-
-    let itemData = await models.item.update({ isActive: 0 }, { where: { id: id } });
+    let statuschange
+    if (itemDatae.isActive == 0) {
+      statuschange = 1;
+    } else {
+      statuschange = 0;
+    }
+    let itemData = await models.item.update({ isActive: statuschange }, { where: { id: id } });
 
     if (itemData === [0]) {
       throw new Error("item not update")

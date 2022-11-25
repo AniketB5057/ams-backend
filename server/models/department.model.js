@@ -17,10 +17,6 @@ export default (sequelize, DataTypes) => {
             type: DataTypes.STRING,
             field: "department_unique_id",
         },
-        description: {
-            type: DataTypes.STRING,
-            field: "description",
-        },
         isActive: {
             type: DataTypes.BOOLEAN,
             field: "is_active",

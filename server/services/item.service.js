@@ -107,7 +107,7 @@ const itemGet = async (itemId) => {
   let responseData = statusConst.error;
   try {
     const itemData = await models.item.findOne({
-      where: { [Op.and]: { id: itemId, isActive: true } },
+      where: { [Op.and]: { id: itemId } },
       include: [
         {
           model: models.categoryDetails,

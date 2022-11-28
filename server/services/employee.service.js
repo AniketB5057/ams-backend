@@ -115,7 +115,7 @@ const employeeDetails = async (req) => {
 const employee = async (employeeId) => {
   let responseData = statusConst.error;
   try {
-    // let employeeId = decrypt(data);
+
     const employeeData = await models.employee.findOne({
       where: { id: employeeId },
       include: [{
@@ -213,7 +213,9 @@ const employeeComboDetail = async (req) => {
   return responseData;
 }
 
-// assignItem
+// ======================================================> ASSIGN ITEM
+
+// CREATE ASSIGN-ITEM
 const assignItems = async (req) => {
   let responseData = statusConst.error;
   let { employeeId, itemIds, remarks } = req.body;
@@ -278,27 +280,33 @@ const assignItems = async (req) => {
   return responseData;
 };
 
-const getItemAssign = async (employeeId) => {
+// GET-SINGLE ASSIGN-ITEM
+const getItemAssign = async (Data) => {
   let responseData = statusConst.error;
   try {
-    const assignItemData = await models.employeeAssignment.findOne({
-      where: { [Op.and]: { id: employeeId, isActive: true } },
-      include: [{ model: models.employee, as: "employeeDetail", attributes: ["firstName", "lastName"] },
-      { model: models.item, as: "itemDetail", attributes: ["itemName"] }],
+    const employeeData = await models.employeeAssignment.findOne({
+      where: { id: Data },
+      include: [
+        {
+          model: models.employee,
+          as: "employeeDetail",
+          attributes: ["firstName", "lastName", "employeeUniqueId"],
+          include: [{ model: models.employeeAssignment, as: 'employeeAssigments' },]
+        },
+      ],
     });
-
-    if (assignItemData) {
-      responseData = { status: 200, message: "assignitem fetch successfully", success: true, assignItemData, };
-    } else {
-      responseData = { status: 400, message: "assignitem does not exist", success: false, };
+    if (!employeeData) {
+      return { status: 404, message: "categories not found" };
     }
+    responseData = { status: 200, message: 'Success', employeeData };
   } catch (error) {
-    console.log(error);
-    responseData = { status: 400, message: "assignitem not found", success: false, };
+    responseData = { status: 200, message: error.message };
   }
   return responseData;
 };
 
+
+// GET-ALL ASSIGN-ITEM
 const assignItemDetails = async (req) => {
   let responseData = statusConst.error;
   const entityParams = _.get(req, "query", {});
@@ -314,7 +322,6 @@ const assignItemDetails = async (req) => {
       },
     };
   }
-
   try {
     const { offset, limit, pagination } = Helper.dataPagination(entityParams);
 
@@ -323,8 +330,14 @@ const assignItemDetails = async (req) => {
       offset: offset,
       limit: limit,
       order: [["id", "DESC"]],
-      include: [{ model: models.employee, as: "employeeDetail", attributes: ["firstName", "lastName"] },
-      { model: models.item, as: "itemDetail", attributes: ["itemName"] }],
+      include: [
+        {
+          model: models.employee,
+          as: "employeeDetail",
+          attributes: ["firstName", "lastName", "employeeUniqueId"],
+          include: [{ model: models.employeeAssignment, as: 'employeeAssigments' },]
+        },
+      ],
     });
     if (employeeDeatail.rows.length > 0) {
       pagination["totalPages"] = Math.ceil(
@@ -347,6 +360,8 @@ const assignItemDetails = async (req) => {
   return responseData;
 };
 
+
+// UPDATE ASSIGN-ITEM
 const updateAssignItem = async (req) => {
   let responseData = statusConst.error;
   const { itemIds, remarks, employeeId } = req.body;

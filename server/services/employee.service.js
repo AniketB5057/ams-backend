@@ -286,13 +286,16 @@ const getItemAssign = async (Data) => {
   try {
     const employeeData = await models.employeeAssignment.findOne({
       where: { id: Data },
-      include: [
-        {
-          model: models.employee,
-          as: "employeeDetail",
-          attributes: ["firstName", "lastName", "employeeUniqueId"],
-          include: [{ model: models.employeeAssignment, as: 'employeeAssigments' },]
-        },
+      include: [{
+        model: models.employee, as: "employeeDetail", attributes: ["firstName", "lastName", "employeeUniqueId"],
+        include: [{
+          model: models.employeeAssignment, as: 'employeeAssigments',
+          include: [{
+            model: models.item,
+            as: "itemDetail", attributes: ["itemName", "description", "serialNo", "cost", "datePurchased"]
+          }],
+        }]
+      },
       ],
     });
     if (!employeeData) {
@@ -304,7 +307,6 @@ const getItemAssign = async (Data) => {
   }
   return responseData;
 };
-
 
 // GET-ALL ASSIGN-ITEM
 const assignItemDetails = async (req) => {
@@ -335,7 +337,10 @@ const assignItemDetails = async (req) => {
           model: models.employee,
           as: "employeeDetail",
           attributes: ["firstName", "lastName", "employeeUniqueId"],
-          include: [{ model: models.employeeAssignment, as: 'employeeAssigments' },]
+          include: [{
+            model: models.employeeAssignment, as: 'employeeAssigments',
+            include: [{ model: models.item, as: "itemDetail", attributes: ["itemName", "description", "serialNo", "cost", "datePurchased"] }],
+          },],
         },
       ],
     });
@@ -359,7 +364,6 @@ const assignItemDetails = async (req) => {
   }
   return responseData;
 };
-
 
 // UPDATE ASSIGN-ITEM
 const updateAssignItem = async (req) => {

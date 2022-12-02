@@ -215,19 +215,20 @@ const employeeComboDetail = async (req) => {
 
 // ======================================================> ASSIGN ITEM
 
-// CREATE ASSIGN-ITEM
+// CREATE ASSIGN - ITEM
+
 const assignItems = async (req) => {
 
   let responseData = statusConst.error;
   let { employeeId, itemIds, remarks } = req.body;
-  const createdBy = req.tokenUser.id;
+  const createdBy = req.tokenUser.id
   try {
     if (!Array.isArray(itemIds)) { throw new Error("itemIds is not a array") }
+
     const employeeAssigmentDetail = await sequelize.transaction(async (t) => {
       const employee = await models.employee.findOne({ where: { id: employeeId }, transaction: t })
-      employeeName = employee.dataValues.firstName;
-      let itemInfo;
       if (!employee) { throw new Error("employee does not exist") }
+
       let assignItems = [];
       for (let i = 0; i < itemIds.length; i++) {
         const element = itemIds[i];
@@ -242,25 +243,26 @@ const assignItems = async (req) => {
         const newId = COMBOUNIQUEID.substring(0, COMBOUNIQUEID.length - idLength);
         let comboId = `${newId}${employee.id}`;
 
+
         if (!item) { throw new Error(`Item does not exist`) };
         if ((oldItem && oldItem.itemName == item.itemName) || item.isAssigned) { throw new Error(`This ${item.itemName} is already assing to another employee`) }
 
         const assignDate = new Date();
 
-        itemInfo = { itemId: element, employeeId: employeeId, remarks: remarks, comboId: comboId, dateAssigned: assignDate, userId: createdBy, createdBy: createdBy, modifiedBy: undefined }
+        let itemInfo = { itemId: element, employeeId: employeeId, createdBy: createdBy, userId: createdBy, remarks: remarks, comboId: comboId, dateAssigned: assignDate }
         assignItems.push(itemInfo)
       }
-      var employeeName;
       let alreadyAssigned = await models.employeeAssignment.findAll({
         where: { employeeId: employee.id },
         include: [{
           model: models.item,
           as: "itemDetail",
-          attributes: ["itemName", "datePurchased"]
+          attributes: ["itemName"]
         }],
         transaction: t
       })
-      let employeeAssigment = await models.employeeAssignment.create(itemInfo)
+      let employeeAssigment = await models.employeeAssignment.bulkCreate(assignItems, { returning: true }, { transaction: t })
+
       if (!employeeAssigment) { throw new Error("Unable to assign item to employee"); }
       await models.item.update({ isAssigned: true }, { where: { id: { [Op.in]: itemIds } }, transaction: t })
 
@@ -273,6 +275,7 @@ const assignItems = async (req) => {
   }
   return responseData;
 };
+
 
 // GET-SINGLE ASSIGN-ITEM
 const getItemAssign = async (Data) => {

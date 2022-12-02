@@ -217,13 +217,12 @@ const employeeComboDetail = async (req) => {
 
 // CREATE ASSIGN-ITEM
 const assignItems = async (req) => {
+
   let responseData = statusConst.error;
   let { employeeId, itemIds, remarks } = req.body;
   const createdBy = req.tokenUser.id;
-
   try {
     if (!Array.isArray(itemIds)) { throw new Error("itemIds is not a array") }
-
     const employeeAssigmentDetail = await sequelize.transaction(async (t) => {
       const employee = await models.employee.findOne({ where: { id: employeeId }, transaction: t })
       employeeName = employee.dataValues.firstName;
@@ -250,11 +249,8 @@ const assignItems = async (req) => {
 
         itemInfo = { itemId: element, employeeId: employeeId, remarks: remarks, comboId: comboId, dateAssigned: assignDate, userId: createdBy, createdBy: createdBy, modifiedBy: undefined }
         assignItems.push(itemInfo)
-
       }
-
       var employeeName;
-
       let alreadyAssigned = await models.employeeAssignment.findAll({
         where: { employeeId: employee.id },
         include: [{
@@ -262,10 +258,8 @@ const assignItems = async (req) => {
           as: "itemDetail",
           attributes: ["itemName", "datePurchased"]
         }],
-
         transaction: t
       })
-
       let employeeAssigment = await models.employeeAssignment.create(itemInfo)
       if (!employeeAssigment) { throw new Error("Unable to assign item to employee"); }
       await models.item.update({ isAssigned: true }, { where: { id: { [Op.in]: itemIds } }, transaction: t })
@@ -286,6 +280,7 @@ const getItemAssign = async (Data) => {
   try {
     const employeeData = await models.employeeAssignment.findOne({
       where: { id: Data },
+      attributes: ["id", "employeeId", "comboId", "dateAssigned"],
       include: [{
         model: models.employee, as: "employeeDetail", attributes: ["firstName", "lastName", "employeeUniqueId"],
         include: [{
@@ -299,7 +294,7 @@ const getItemAssign = async (Data) => {
       ],
     });
     if (!employeeData) {
-      return { status: 404, message: "categories not found" };
+      return { status: 404, message: "employee not found" };
     }
     responseData = { status: 200, message: 'Success', employeeData };
   } catch (error) {
@@ -332,6 +327,7 @@ const assignItemDetails = async (req) => {
       offset: offset,
       limit: limit,
       order: [["id", "DESC"]],
+      attributes: ["id", "employeeId", "comboId", "dateAssigned"],
       include: [
         {
           model: models.employee,
